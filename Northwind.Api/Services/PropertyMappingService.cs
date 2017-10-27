@@ -32,7 +32,7 @@ namespace Northwind.Api.Services
                 return matchingMapping.First()._mappingDictionary;
             }
 
-            throw new Exception($"Cannot Find exact property mapping instance for {typeof(TSource)}");
+            throw new Exception($"Cannot Find exact property mapping instance for {typeof(TSource)} of {typeof(TDestination)}");
         }
     }
 }
