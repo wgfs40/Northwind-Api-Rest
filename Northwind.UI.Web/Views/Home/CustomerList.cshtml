@@ -1,0 +1,20 @@
+﻿@model IEnumerable< Northwind.UI.Web.Models.CustomerDto>
+
+
+<table class="table table-bordered table-striped">
+    <tr>
+        <th>CustomerID</th>
+        <th>CompanyName</th>
+        <th>ContactFull</th>
+        <th>Age</th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.CustomerID</td>
+            <td>@item.CompanyName</td>
+            <td>@item.ContactFull</td>
+            <td>@item.Age</td>
+        </tr>
+    }
+</table>
