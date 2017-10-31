@@ -3,12 +3,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Northwind.Api.Services;
 using Northwind.Api.Entities;
 using Microsoft.EntityFrameworkCore;
-using Northwind.Api.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Newtonsoft.Json.Serialization;
 
 namespace Northwind.Api
 {
@@ -33,6 +32,10 @@ namespace Northwind.Api
             services.AddMvc(setupAction => {
                 setupAction.ReturnHttpNotAcceptable = true;
                 setupAction.OutputFormatters.Add(new XmlDataContractSerializerOutputFormatter());
+            })
+            .AddJsonOptions(options => {
+                options.SerializerSettings.ContractResolver =
+                   new CamelCasePropertyNamesContractResolver();
             });
 
             //register DBContext container
@@ -41,8 +44,6 @@ namespace Northwind.Api
 
             //Register Repository            
             RegisterServicesGeneric.Register(services);
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
