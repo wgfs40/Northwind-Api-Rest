@@ -5,15 +5,18 @@ using Northwind.Api.Entities;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Northwind.Api.Helpers;
+using Northwind.Api.Models;
 
 namespace Northwind.Api.Services
 {
     public class NorthwindRepository : INorthwindRepository
     {
         private NorthwindContext _northwindContext;
-        public NorthwindRepository(NorthwindContext northwindContext)
+        private IPropertyMappingService _propertyMappingService;
+        public NorthwindRepository(NorthwindContext northwindContext, IPropertyMappingService propertyMappingService)
         {
             this._northwindContext = northwindContext;
+            this._propertyMappingService = propertyMappingService;
         }
 
         public void AddCustomer(Customer customer)
@@ -60,7 +63,8 @@ namespace Northwind.Api.Services
             //    .ThenBy(c => c.ContactName).AsQueryable();
 
             var collectionBeforePaging = _northwindContext.Customers
-              .ApplySort(customerResourceParameters.OrderBy, _mappingDictionary);
+              .ApplySort(customerResourceParameters.OrderBy, 
+              _propertyMappingService.GetPropertyMapping<CustomerDto,Customer>());
 
 
 

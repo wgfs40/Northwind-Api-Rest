@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace Northwind.Api.Services
 {
-    public interface IPropertyMapping
+    public interface IPropertyMappingService
     {
-
+        Dictionary<string, PropertyMappingValue> GetPropertyMapping<TSource, TDestination>();
     }
 }

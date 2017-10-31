@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 
 namespace Northwind.Api.Services
 {
-    public class PropertyMappingService
+    public class PropertyMappingService : IPropertyMappingService
     {
         private Dictionary<string, PropertyMappingValue> _customerPropertyMapping =
                 new Dictionary<string, PropertyMappingValue>(StringComparer.OrdinalIgnoreCase)
                 {
-                    {"CustomerID", new PropertyMappingValue(new List<string>(){ "CustomerID"}) },
-                    {"CompanyName", new PropertyMappingValue(new List<string>(){ "CompanyName"}) }                    
+                    {"CustomerID", new PropertyMappingValue(new List<string>(){ "CustomerID"})},
+                    {"CompanyName", new PropertyMappingValue(new List<string>(){ "CompanyName"})},
+                    { "ContactFull", new PropertyMappingValue(new List<string>(){ "ContactName","ContactTitle"})}
                 };
 
         private IList<IPropertyMapping> PropertyMapping = new List<IPropertyMapping>();
@@ -22,6 +23,7 @@ namespace Northwind.Api.Services
         {
             PropertyMapping.Add(new PropertyMapping<CustomerDto,Customer>(_customerPropertyMapping));
         }
+
         public Dictionary<string, PropertyMappingValue> GetPropertyMapping<TSource, TDestination>()
         {
             //get matching mapping

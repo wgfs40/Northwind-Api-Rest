@@ -60,6 +60,7 @@ namespace Northwind.Api.Controllers
                 case ResourceUriType.PreviousPage:
                     return _urlHelper.Link("GetCustomers",
                         new {
+                            orderBy = customerResourceParameters.OrderBy,
                             searchQuery = customerResourceParameters.SearchQuery,
                             companyName = customerResourceParameters.CompanyName,
                             pageNumber = customerResourceParameters.PageNumber - 1,
@@ -69,6 +70,7 @@ namespace Northwind.Api.Controllers
                     return _urlHelper.Link("GetCustomers",
                         new
                         {
+                            orderBy = customerResourceParameters.OrderBy,
                             searchQuery = customerResourceParameters.SearchQuery,
                             companyName = customerResourceParameters.CompanyName,
                             pageNumber = customerResourceParameters.PageNumber + 1,
@@ -78,6 +80,7 @@ namespace Northwind.Api.Controllers
                     return _urlHelper.Link("GetCustomers",
                        new
                        {
+                           orderBy = customerResourceParameters.OrderBy,
                            searchQuery = customerResourceParameters.SearchQuery,
                            companyName = customerResourceParameters.CompanyName,
                            pageNumber = customerResourceParameters.PageNumber,

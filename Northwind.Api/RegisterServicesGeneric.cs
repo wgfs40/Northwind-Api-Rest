@@ -19,6 +19,8 @@ namespace Northwind.Api
                     implementationFactory.GetService<IActionContextAccessor>().ActionContext;
                 return new UrlHelper(actionContext);
             });
+
+            services.AddTransient<IPropertyMappingService, PropertyMappingService>();
         }
     }
 }
