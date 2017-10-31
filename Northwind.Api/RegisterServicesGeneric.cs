@@ -21,6 +21,7 @@ namespace Northwind.Api
             });
 
             services.AddTransient<IPropertyMappingService, PropertyMappingService>();
+            services.AddTransient<ITypeHeperService, TypeHeperService>();
         }
     }
 }

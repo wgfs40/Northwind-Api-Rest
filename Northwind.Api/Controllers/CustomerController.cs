@@ -17,15 +17,26 @@ namespace Northwind.Api.Controllers
     {
         private INorthwindRepository _northwindRepository;
         private IUrlHelper _urlHelper;
-        public CustomerController(INorthwindRepository northwindRepository, IUrlHelper urlHelper)
+        private IPropertyMappingService _propertyMappingService;
+        private ITypeHeperService _typeHeperService;
+
+        public CustomerController(INorthwindRepository northwindRepository, IUrlHelper urlHelper, IPropertyMappingService propertyMappingService, ITypeHeperService typeHeperService)
         {
             this._northwindRepository = northwindRepository;
             this._urlHelper = urlHelper;
+            this._propertyMappingService = propertyMappingService;
+            this._typeHeperService = typeHeperService;
         }
 
         [HttpGet(Name = "GetCustomers")]
         public IActionResult GetCustomers(CustomerResourceParameters customerResourceParameters)
         {
+
+            if (!_typeHeperService.TypeHasProperties<CustomerDto>(customerResourceParameters.Fields))
+            {
+                return BadRequest();
+            }
+
            var CustomerFromRepo = _northwindRepository.GetCustomers(customerResourceParameters);
 
             var previousPageLink = CustomerFromRepo.HasPrevious ?
@@ -48,7 +59,7 @@ namespace Northwind.Api.Controllers
                 Newtonsoft.Json.JsonConvert.SerializeObject(paginationMetada));
 
            var customerDto = Mapper.Map<IEnumerable<CustomerDto>>(CustomerFromRepo);
-           return Ok(customerDto);
+           return Ok(customerDto.ShapeData(customerResourceParameters.Fields));
         }
 
         private string CreateCustomersResourceUri(
@@ -60,6 +71,7 @@ namespace Northwind.Api.Controllers
                 case ResourceUriType.PreviousPage:
                     return _urlHelper.Link("GetCustomers",
                         new {
+                            fields = customerResourceParameters.Fields,
                             orderBy = customerResourceParameters.OrderBy,
                             searchQuery = customerResourceParameters.SearchQuery,
                             companyName = customerResourceParameters.CompanyName,
@@ -70,6 +82,7 @@ namespace Northwind.Api.Controllers
                     return _urlHelper.Link("GetCustomers",
                         new
                         {
+                            fields = customerResourceParameters.Fields,
                             orderBy = customerResourceParameters.OrderBy,
                             searchQuery = customerResourceParameters.SearchQuery,
                             companyName = customerResourceParameters.CompanyName,
@@ -80,6 +93,7 @@ namespace Northwind.Api.Controllers
                     return _urlHelper.Link("GetCustomers",
                        new
                        {
+                           fields = customerResourceParameters.Fields,
                            orderBy = customerResourceParameters.OrderBy,
                            searchQuery = customerResourceParameters.SearchQuery,
                            companyName = customerResourceParameters.CompanyName,
