@@ -118,7 +118,7 @@ namespace Northwind.Api.Services
 
         public void UpdateCustomer(Customer customer)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void UpdateOrderForCustomer(Order order)

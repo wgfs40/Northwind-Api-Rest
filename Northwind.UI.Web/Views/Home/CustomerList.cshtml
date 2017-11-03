@@ -1,5 +1,7 @@
-﻿@model IEnumerable< Northwind.UI.Web.Models.CustomerDto>
+﻿@model Northwind.UI.Web.Models.CustomerGroupVM
+@using PagedList.Core.Mvc
 
+@Html.ActionLink("Create", "CreateCustomer", "Home")
 
 <table class="table table-bordered table-striped">
     <tr>
@@ -7,14 +9,24 @@
         <th>CompanyName</th>
         <th>ContactFull</th>
         <th>Age</th>
+        <th>Country</th>
+        <th>Address</th>
+        <th></th>
     </tr>
-    @foreach (var item in Model)
+    @foreach (var item in Model.CustomerGroup)
     {
         <tr>
             <td>@item.CustomerID</td>
             <td>@item.CompanyName</td>
             <td>@item.ContactFull</td>
             <td>@item.Age</td>
+            <td>@item.Country</td>
+            <td>@item.Address</td>
+            <td>@Html.ActionLink("Edit","Edit","Home",new { id = item.CustomerID})</td>
         </tr>
     }
 </table>
+
+@(Model.pagingInfo.CurrentPage) of @Model.pagingInfo.TotalPages
+
+<pager class="pager-container" list="Model.CustomerGroup" options="@PagedListRenderOptions.TwitterBootstrapPager" asp-action="CustomerList" asp-controller="Home"></pager>

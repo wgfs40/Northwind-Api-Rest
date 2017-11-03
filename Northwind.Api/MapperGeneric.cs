@@ -20,6 +20,8 @@ namespace Northwind.Api
 
             cfg.CreateMap<CustomerForCreationDto, Customer>();
 
+            cfg.CreateMap<Customer, CustomerForCreationDto>();
+
             cfg.CreateMap<OrderForCreationDto, Order>();
 
             cfg.CreateMap<UpdateOrderDto, Order>();

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Northwind.Api.Entities
+namespace Northwind.UI.Web.Models
 {
-    public class Customer
+    public class CustomerForCreationDto
     {
+
         public string CustomerID { get; set; }
         public string CompanyName { get; set; }
         public string ContactName { get; set; }
@@ -19,8 +20,6 @@ namespace Northwind.Api.Entities
         public string Phone { get; set; }
         public string Fax { get; set; }
         public DateTime CreationTime { get; set; }
-        public ICollection<Order> Orders { get; set; }
-             = new List<Order>();
 
     }
 }

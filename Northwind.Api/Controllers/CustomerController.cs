@@ -111,7 +111,7 @@ namespace Northwind.Api.Controllers
             {
                 return NotFound();
             }
-            var customer = Mapper.Map<CustomerDto>(CustomerFromRepo);
+            var customer = Mapper.Map<CustomerForCreationDto>(CustomerFromRepo);
             return Ok(customer);
         }
 
@@ -137,6 +137,28 @@ namespace Northwind.Api.Controllers
                 CustomerToReturn);
         }
 
+        [HttpPut("{CustomerID}")]
+        public IActionResult UpdateCustomer(string CustomerID,[FromBody]CustomerForCreationDto customer)
+        {
+            if (customer == null)
+            {
+                return BadRequest();
+            }
+
+            var customerEntity = this._northwindRepository.GetCustomer(CustomerID);
+            customer.CreationTime = DateTime.Now;
+            Mapper.Map(customer, customerEntity);
+            this._northwindRepository.UpdateCustomer(customerEntity);
+
+            if (!this._northwindRepository.Save())
+            {
+                throw new Exception($"Updating Customer {CustomerID} failed on Update!.");
+            }
+
+            return NoContent();
+
+        }
+
         [HttpPost("{CustomerID}")]
         public IActionResult BlockCustomerCreation(string CustomerID) {
 
@@ -146,26 +168,21 @@ namespace Northwind.Api.Controllers
             }
 
             return NotFound();
-
         }
 
         [HttpDelete("{CustomerID}")]
         public IActionResult DeleteCustomer(string CustomerID)
         {
             var customerForRepo = _northwindRepository.GetCustomer(CustomerID);
-
             if (customerForRepo == null)
             {
                 return NotFound();
             }
-
             _northwindRepository.DeleteCustomer(customerForRepo);
-
             if (!_northwindRepository.Save())
             {
                 throw new Exception($"Deleting customer {CustomerID} failed on save!.");
             }
-
             return NoContent();
         }
     }
