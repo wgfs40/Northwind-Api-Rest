@@ -22,7 +22,9 @@
             <td>@item.Age</td>
             <td>@item.Country</td>
             <td>@item.Address</td>
-            <td>@Html.ActionLink("Edit","Edit","Home",new { id = item.CustomerID})</td>
+            <td>@Html.ActionLink("Edit","Edit","Home",new { id = item.CustomerID}) |
+                @Html.ActionLink("Delete","Delete","Home",new { id= item.CustomerID })
+            </td>
         </tr>
     }
 </table>

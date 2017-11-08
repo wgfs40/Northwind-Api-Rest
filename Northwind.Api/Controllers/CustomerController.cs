@@ -3,12 +3,11 @@ using Northwind.Api.Models;
 using Northwind.Api.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Northwind.Api.Helpers;
 using AutoMapper;
 using Northwind.Api.Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace Northwind.Api.Controllers
 {
@@ -156,7 +155,33 @@ namespace Northwind.Api.Controllers
             }
 
             return NoContent();
+        }
 
+        [HttpPatch("{CustomerID}")]
+        public IActionResult UpdateCustomerPartially(string CustomerID, 
+            [FromBody]JsonPatchDocument<CustomerForCreationDto> jsonPatch)
+        {
+            if (jsonPatch == null)
+            {
+                return BadRequest();
+            }
+
+            var customerEntity = this._northwindRepository.GetCustomer(CustomerID);
+            
+            var customerToPach = Mapper.Map<CustomerForCreationDto>(customerEntity);
+            jsonPatch.ApplyTo(customerToPach);
+
+            //add validation
+            Mapper.Map(customerToPach, customerEntity);
+
+            _northwindRepository.UpdateCustomer(customerEntity);
+
+            if (!_northwindRepository.Save())
+            {
+                throw new Exception($"Patching customer {CustomerID} failed to saved!.");
+            }
+
+            return NoContent();
         }
 
         [HttpPost("{CustomerID}")]

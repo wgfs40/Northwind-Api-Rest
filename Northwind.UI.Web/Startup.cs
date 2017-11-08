@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 
 namespace Northwind.UI.Web
 {
@@ -24,6 +26,30 @@ namespace Northwind.UI.Web
         {
             services.AddMvc();
 
+            //configured authenticate in asp.net 2.0
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "Cookies";
+                options.DefaultChallengeScheme = "oidc";
+            })
+            .AddCookie("Cookies")
+            .AddOpenIdConnect("oidc", options =>
+            {
+                options.SignInScheme = "Cookies";
+
+                options.Authority = "https://localhost:44384/";
+                options.RequireHttpsMetadata = true;
+
+                options.ClientId = "northwindclient";
+                options.SaveTokens = true;
+                options.ResponseType = "code id_token";
+                options.ClientSecret = "secret";
+
+                options.Scope.Add("openid");
+                options.Scope.Add("profile");
+
+            });
+
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         }
 
@@ -40,8 +66,8 @@ namespace Northwind.UI.Web
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseAuthentication();
             app.UseStaticFiles();
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

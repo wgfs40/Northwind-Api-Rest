@@ -9,9 +9,12 @@ using Northwind.UI.Web.Helpers;
 using System.Net.Http;
 using Newtonsoft.Json;
 using PagedList.Core;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Northwind.UI.Web.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         public IActionResult Index()
@@ -71,7 +74,7 @@ namespace Northwind.UI.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCustomer(CustomerDto customer)
+        public async Task<IActionResult> CreateCustomer(CustomerForCreationDto customer)
         {
             try
             {
@@ -121,11 +124,23 @@ namespace Northwind.UI.Web.Controllers
             try
             {
                 var client = NorthwindTrackerHttpClient.GetClient();
-                //serealize & PUT
-                var serealizedItemToUpdate = JsonConvert.SerializeObject(customer);
 
-                var response = await client.PutAsync($"api/customers/" + id,
-                    new StringContent(serealizedItemToUpdate,System.Text.Encoding.Unicode,"application/json"));
+                //partial edit
+                JsonPatchDocument<CustomerForCreationDto> patchDocument = new JsonPatchDocument<CustomerForCreationDto>();
+                patchDocument.Replace(eg => eg.CompanyName,customer.CompanyName);
+                patchDocument.Replace(eg => eg.ContactName, customer.ContactName);
+                patchDocument.Replace(eg => eg.ContactTitle, customer.ContactTitle);
+
+                var serializedItemToUpdate = JsonConvert.SerializeObject(patchDocument);
+
+                var response = await client.PatchAsync($"api/customers/" + id,
+                    new StringContent(serializedItemToUpdate, System.Text.Encoding.Unicode, "application/json"));
+
+                ////serealize & PUT
+                //var serealizedItemToUpdate = JsonConvert.SerializeObject(customer);
+
+                //var response = await client.PutAsync($"api/customers/" + id,
+                //    new StringContent(serealizedItemToUpdate,System.Text.Encoding.Unicode,"application/json"));
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -141,6 +156,28 @@ namespace Northwind.UI.Web.Controllers
                 return Content("An error occurred!");
             }
             
+        }
+
+        public async Task<IActionResult> Delete(string id)
+        {
+            try
+            {
+                var client = NorthwindTrackerHttpClient.GetClient();
+                var response = await client.DeleteAsync($"api/customers/" + id);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("CustomerList");
+                }
+                else
+                {
+                    return Content("an error occurred!!");
+                }
+            }
+            catch (Exception)
+            {
+                return Content("an error occurred!!");
+            }            
         }
     }
 }

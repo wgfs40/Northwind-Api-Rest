@@ -3,8 +3,8 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "https://localhost:44372/",
-      "sslPort": 44372
+      "applicationUrl": "https://localhost:44384/",
+      "sslPort": 44384
     }
   },
   "profiles": {
@@ -15,13 +15,13 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Northwind.UI.Web": {
+    "Northwind.IDP": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:60060/"
+      "applicationUrl": "http://localhost:51433/"
     }
   }
 }
