@@ -25,7 +25,9 @@ namespace Northwind.IDP
                     Claims = new List<Claim>
                     {
                         new Claim("given_name","Frank"),
-                        new Claim("family_name","underwood")
+                        new Claim("family_name","underwood"),
+                        new Claim("address","1, Main Road"),
+                        new Claim("role","FreeUser")
                     }
                 },
                 new TestUser
@@ -37,7 +39,9 @@ namespace Northwind.IDP
                     Claims = new List<Claim>
                     {
                         new Claim("given_name","Claire"),
-                        new Claim("family_name", "underwood")
+                        new Claim("family_name", "underwood"),
+                        new Claim("address","2, Main Road 2 floor"),
+                        new Claim("role","PayingUser")
                     }
                 }
 
@@ -49,7 +53,9 @@ namespace Northwind.IDP
             return new List<IdentityResource>
             {
                 new IdentityResources.OpenId(),
-                new IdentityResources.Profile()
+                new IdentityResources.Profile(),
+                new IdentityResources.Address(),
+                new IdentityResource("roles","Your role(s)",new List<string>(){ "role"})
             };
         }
 
@@ -68,12 +74,19 @@ namespace Northwind.IDP
                     AllowedScopes =
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile
+                        IdentityServerConstants.StandardScopes.Profile,
+                        IdentityServerConstants.StandardScopes.Address,
+                        "roles"
                     },
                     ClientSecrets =
                     {
                         new Secret("secret".Sha256())
+                    },
+                    PostLogoutRedirectUris =
+                    {
+                        "https://localhost:44372/signout-callback-oidc"
                     }
+                    //AlwaysIncludeUserClaimsInIdToken = true
                 }
 
             };

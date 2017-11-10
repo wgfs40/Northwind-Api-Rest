@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Northwind.UI.Web
 {
@@ -25,6 +25,9 @@ namespace Northwind.UI.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             //configured authenticate in asp.net 2.0
             services.AddAuthentication(options =>
@@ -44,13 +47,50 @@ namespace Northwind.UI.Web
                 options.SaveTokens = true;
                 options.ResponseType = "code id_token";
                 options.ClientSecret = "secret";
+                options.GetClaimsFromUserInfoEndpoint = true;
+
 
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
+                options.Scope.Add("address");
+                options.Scope.Add("roles");
+               
+
+                options.Events = new OpenIdConnectEvents()
+                {
+                    OnTokenValidated = Context =>
+                    {
+                        var identity = Context.Principal.Identity as ClaimsIdentity;
+
+                        var subjectClaim = identity.Claims.FirstOrDefault(n => n.Type == "sub");
+
+                        var newClaimsIdentity = new ClaimsIdentity(
+                                Context.Scheme.Name, "given_name", "role");
+
+                        newClaimsIdentity.AddClaim(subjectClaim);
+
+                        var ticket = new AuthenticationTicket(
+                            new ClaimsPrincipal(newClaimsIdentity),
+                            Context.Properties,
+                            Context.Scheme.Name
+                            );
+
+                         Context.Principal = new ClaimsPrincipal(newClaimsIdentity);
+                        //var tokenvalidatedContext = new TokenValidatedContext(Context.HttpContext, Context.Scheme, Context.Options, Context.Principal, Context.Properties);
+                        
+                        
+                        return Task.FromResult(0);
+                    },
+                    OnUserInformationReceived = UserInformationReceivedContext =>
+                    {
+                        UserInformationReceivedContext.User.Remove("address");
+                        return Task.FromResult(0);
+                    }                    
+                };
 
             });
 
-            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,7 +105,6 @@ namespace Northwind.UI.Web
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-
             app.UseAuthentication();
             app.UseStaticFiles();
             app.UseMvc(routes =>

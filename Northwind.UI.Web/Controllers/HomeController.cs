@@ -11,6 +11,9 @@ using Newtonsoft.Json;
 using PagedList.Core;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Authorization;
+using IdentityModel.Client;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Northwind.UI.Web.Controllers
 {
@@ -18,7 +21,7 @@ namespace Northwind.UI.Web.Controllers
     public class HomeController : Controller
     {
         public IActionResult Index()
-        {
+        {            
             return View();
         }
 
@@ -178,6 +181,37 @@ namespace Northwind.UI.Web.Controllers
             {
                 return Content("an error occurred!!");
             }            
+        }
+
+        public async Task Logout()
+        {            
+            await AuthenticationHttpContextExtensions.SignOutAsync(HttpContext,"Cookies");
+            await AuthenticationHttpContextExtensions.SignOutAsync(HttpContext, "oidc");
+            //await HttpContext.Authentication.SignOutAsync("Cookies");
+        }
+
+        public async Task<IActionResult> OrderFrame()
+        {
+            var discoveryClient = new DiscoveryClient("https://localhost:44384/");
+            var metaDataResponse = await discoveryClient.GetAsync();
+
+            var userInfoClient = new UserInfoClient(metaDataResponse.UserInfoEndpoint);
+
+            var accessToken = await AuthenticationHttpContextExtensions.GetTokenAsync(HttpContext,OpenIdConnectParameterNames.AccessToken);
+
+            var response = await userInfoClient.GetAsync(accessToken);
+
+            if (response.IsError)
+            {
+                throw new Exception(
+                        "Problem accessing the UserInfo endpoint.",
+                        response.Exception
+                    );
+            }
+
+            var address = response.Claims.FirstOrDefault(c => c.Type == "address")?.Value;
+
+            return View(new OrderFrameViewModel(address));
         }
     }
 }
