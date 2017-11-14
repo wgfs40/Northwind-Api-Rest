@@ -1,52 +1,44 @@
-﻿using IdentityServer4;
+﻿using IdentityModel;
+using IdentityServer4;
 using IdentityServer4.Models;
 using IdentityServer4.Test;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Northwind.IDP
 {
     public static class Config
     {
-        public static List<TestUser> GetUsers()
+        public static List<TestUser> Users = new List<TestUser>
         {
-
-            return new List<TestUser>
-            {
-                new TestUser
+            new TestUser{SubjectId = "818727", Username = "alice", Password = "alice",
+                Claims =
                 {
-                    SubjectId = "d860efca-22d9-47fd-8249-791ba61b07c7",
-                    Username = "Frank",
-                    Password = "password",
-
-                    Claims = new List<Claim>
-                    {
-                        new Claim("given_name","Frank"),
-                        new Claim("family_name","underwood"),
-                        new Claim("address","1, Main Road"),
-                        new Claim("role","FreeUser")
-                    }
-                },
-                new TestUser
-                {
-                    SubjectId = "b7539694-97e7-4dfe-84da-b4256e1ff5c7",
-                    Username = "Claire",
-                    Password = "password",
-
-                    Claims = new List<Claim>
-                    {
-                        new Claim("given_name","Claire"),
-                        new Claim("family_name", "underwood"),
-                        new Claim("address","2, Main Road 2 floor"),
-                        new Claim("role","PayingUser")
-                    }
+                    new Claim(JwtClaimTypes.Name, "Alice Smith"),
+                    new Claim(JwtClaimTypes.GivenName, "Alice"),
+                    new Claim(JwtClaimTypes.FamilyName, "Smith"),
+                    new Claim(JwtClaimTypes.Email, "AliceSmith@email.com"),
+                    new Claim(JwtClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean),
+                    new Claim(JwtClaimTypes.WebSite, "http://alice.com"),
+                    new Claim(JwtClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", IdentityServer4.IdentityServerConstants.ClaimValueTypes.Json),
+                    new Claim(JwtClaimTypes.Role,"Freelance")
                 }
-
-            };
-        }
+            },
+            new TestUser{SubjectId = "88421113", Username = "bob", Password = "bob",
+                Claims =
+                {
+                    new Claim(JwtClaimTypes.Name, "Bob Smith"),
+                    new Claim(JwtClaimTypes.GivenName, "Bob"),
+                    new Claim(JwtClaimTypes.FamilyName, "Smith"),
+                    new Claim(JwtClaimTypes.Email, "BobSmith@email.com"),
+                    new Claim(JwtClaimTypes.EmailVerified, "true", ClaimValueTypes.Boolean),
+                    new Claim(JwtClaimTypes.WebSite, "http://bob.com"),
+                    new Claim(JwtClaimTypes.Address, @"{ 'street_address': 'One Hacker Way', 'locality': 'Heidelberg', 'postal_code': 69118, 'country': 'Germany' }", IdentityServer4.IdentityServerConstants.ClaimValueTypes.Json),
+                    new Claim("location", "somewhere"),
+                    new Claim(JwtClaimTypes.Role,"PayingUser")
+                }
+            }
+        };
 
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {
@@ -55,7 +47,13 @@ namespace Northwind.IDP
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
                 new IdentityResources.Address(),
-                new IdentityResource("roles","Your role(s)",new List<string>(){ "role"})
+                //new IdentityResource("roles","Your role(s)",new List<string>(){ "role"})
+                new IdentityResource
+                {
+                    Name = "roles",
+                    UserClaims = new List<string>{"role"},
+                    DisplayName = "Your role(s)"
+                }
             };
         }
 
@@ -67,6 +65,7 @@ namespace Northwind.IDP
                     ClientName = "Northwind Systems",
                     ClientId = "northwindclient",
                     AllowedGrantTypes = GrantTypes.Hybrid,
+                    RequireConsent = false,
                     RedirectUris = new List<string>()
                     {
                         "https://localhost:44372/signin-oidc"
@@ -77,7 +76,7 @@ namespace Northwind.IDP
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Address,
                         "roles"
-                    },
+                    },                    
                     ClientSecrets =
                     {
                         new Secret("secret".Sha256())

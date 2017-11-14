@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 
 namespace Northwind.UI.Web
 {
@@ -32,7 +34,7 @@ namespace Northwind.UI.Web
             //configured authenticate in asp.net 2.0
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = "Cookies";
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;//"Cookies";
                 options.DefaultChallengeScheme = "oidc";
             })
             .AddCookie("Cookies")
@@ -42,54 +44,71 @@ namespace Northwind.UI.Web
 
                 options.Authority = "https://localhost:44384/";
                 options.RequireHttpsMetadata = true;
+                
 
                 options.ClientId = "northwindclient";
                 options.SaveTokens = true;
                 options.ResponseType = "code id_token";
                 options.ClientSecret = "secret";
                 options.GetClaimsFromUserInfoEndpoint = true;
-
-
+                options.ClaimActions.MapUniqueJsonKey("role", "role");
+                options.Scope.Clear();
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
                 options.Scope.Add("address");
                 options.Scope.Add("roles");
-               
 
                 options.Events = new OpenIdConnectEvents()
                 {
-                    OnTokenValidated = Context =>
+                    OnTokenValidated = tokenValidatedContext =>
                     {
-                        var identity = Context.Principal.Identity as ClaimsIdentity;
+                        var identity = tokenValidatedContext.Principal.Identity as ClaimsIdentity;
 
                         var subjectClaim = identity.Claims.FirstOrDefault(n => n.Type == "sub");
 
+
                         var newClaimsIdentity = new ClaimsIdentity(
-                                Context.Scheme.Name, "given_name", "role");
+                                tokenValidatedContext.Scheme.Name, "given_name", "role");
 
                         newClaimsIdentity.AddClaim(subjectClaim);
 
-                        var ticket = new AuthenticationTicket(
-                            new ClaimsPrincipal(newClaimsIdentity),
-                            Context.Properties,
-                            Context.Scheme.Name
-                            );
 
-                         Context.Principal = new ClaimsPrincipal(newClaimsIdentity);
+                        var ticket = new AuthenticationTicket(new ClaimsPrincipal(newClaimsIdentity), tokenValidatedContext.Properties, tokenValidatedContext.Scheme.Name);
+                        tokenValidatedContext.Principal = ticket.Principal;
+                        //tokenValidatedContext.Success();
+                        //new ClaimsPrincipal(newClaimsIdentity),
+                        //tokenValidatedContext.Properties,
+                        //tokenValidatedContext.Scheme.Name
+                        //);
+
+                        //tokenValidatedContext.SecurityToken
+
                         //var tokenvalidatedContext = new TokenValidatedContext(Context.HttpContext, Context.Scheme, Context.Options, Context.Principal, Context.Properties);
-                        
-                        
+
+
+
                         return Task.FromResult(0);
                     },
                     OnUserInformationReceived = UserInformationReceivedContext =>
                     {
                         UserInformationReceivedContext.User.Remove("address");
+
+                        //var role = UserInformationReceivedContext.User.GetValue("role").ToString();
+
+                        //var newClaimsIdentity = new ClaimsIdentity(
+                        //       UserInformationReceivedContext.Scheme.Name, "given_name", "role");
+                        //var newclaim = new Claim("role", role);
+
+                        //newClaimsIdentity.AddClaim(newclaim);
+
+                        //UserInformationReceivedContext.Principal.AddIdentity(newClaimsIdentity);
+
                         return Task.FromResult(0);
                     }                    
                 };
 
             });
-
+            services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
             
         }
 
@@ -105,7 +124,7 @@ namespace Northwind.UI.Web
             {
                 app.UseExceptionHandler("/Home/Error");
             }
-            app.UseAuthentication();
+            app.UseAuthentication();            
             app.UseStaticFiles();
             app.UseMvc(routes =>
             {

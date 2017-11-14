@@ -22,7 +22,7 @@ namespace Northwind.IDP
             //configuration identity server
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
-                .AddTestUsers(Config.GetUsers())
+                .AddTestUsers(Config.Users)
                 .AddInMemoryIdentityResources(Config.GetIdentityResources())
                 .AddInMemoryClients(Config.GetClients());
                 
