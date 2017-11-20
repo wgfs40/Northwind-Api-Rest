@@ -11,6 +11,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Northwind.UI.Web.Helpers;
+using Northwind.UI.Web.Services;
 
 namespace Northwind.UI.Web
 {
@@ -29,15 +31,19 @@ namespace Northwind.UI.Web
             services.AddMvc();
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
             //configured authenticate in asp.net 2.0
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;//"Cookies";
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;//"Cookies";                
                 options.DefaultChallengeScheme = "oidc";
+                options.DefaultAuthenticateScheme = "oidc";
             })
-            .AddCookie("Cookies")
+            .AddCookie("Cookies",options => {
+                options.AccessDeniedPath = "/Authorization/AccessDenied";
+            })            
             .AddOpenIdConnect("oidc", options =>
             {
                 options.SignInScheme = "Cookies";
@@ -52,11 +58,15 @@ namespace Northwind.UI.Web
                 options.ClientSecret = "secret";
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.ClaimActions.MapUniqueJsonKey("role", "role");
+                
+                
                 options.Scope.Clear();
                 options.Scope.Add("openid");
                 options.Scope.Add("profile");
                 options.Scope.Add("address");
                 options.Scope.Add("roles");
+                options.Scope.Add("northwindapi");
+                options.Scope.Add("offline_access");
 
                 options.Events = new OpenIdConnectEvents()
                 {
@@ -75,18 +85,8 @@ namespace Northwind.UI.Web
 
                         var ticket = new AuthenticationTicket(new ClaimsPrincipal(newClaimsIdentity), tokenValidatedContext.Properties, tokenValidatedContext.Scheme.Name);
                         tokenValidatedContext.Principal = ticket.Principal;
-                        //tokenValidatedContext.Success();
-                        //new ClaimsPrincipal(newClaimsIdentity),
-                        //tokenValidatedContext.Properties,
-                        //tokenValidatedContext.Scheme.Name
-                        //);
-
-                        //tokenValidatedContext.SecurityToken
-
-                        //var tokenvalidatedContext = new TokenValidatedContext(Context.HttpContext, Context.Scheme, Context.Options, Context.Principal, Context.Properties);
-
-
-
+                        
+                        
                         return Task.FromResult(0);
                     },
                     OnUserInformationReceived = UserInformationReceivedContext =>
@@ -109,7 +109,7 @@ namespace Northwind.UI.Web
 
             });
             services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
-            
+            services.AddScoped<INorthwindHttpClient, NorthwindTrackerHttpClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

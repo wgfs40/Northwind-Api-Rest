@@ -8,10 +8,12 @@ using AutoMapper;
 using Northwind.Api.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Northwind.Api.Controllers
 {
     [Route("api/customers")]
+    [Authorize]
     public class CustomerController : Controller
     {
         private INorthwindRepository _northwindRepository;

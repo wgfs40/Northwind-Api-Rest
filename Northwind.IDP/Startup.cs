@@ -7,15 +7,25 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
+using Marvin.IDP.Entities;
+using Northwind.IDP.Services;
 
 namespace Northwind.IDP
 {
     public class Startup
     {
+        public static IConfigurationRoot _configuration;
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            var connectionString = _configuration["connectionString:NorthwindConnection"];
+            services.AddDbContext<NorthwindUserContext>(o => o.UseSqlServer(connectionString));
+
+            services.AddScoped<INorthwindUserRepository, NorthwindUserRepository>();
+
             //mvc
             services.AddMvc();
 
@@ -23,6 +33,7 @@ namespace Northwind.IDP
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
                 .AddTestUsers(Config.Users)
+                .AddInMemoryApiResources(Config.GetApiResources())
                 .AddInMemoryIdentityResources(Config.GetIdentityResources())
                 .AddInMemoryClients(Config.GetClients());
                 
@@ -30,7 +41,7 @@ namespace Northwind.IDP
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,NorthwindUserContext northwindUserContext)
         {
             loggerFactory.AddConsole();
             loggerFactory.AddDebug();
@@ -39,6 +50,9 @@ namespace Northwind.IDP
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            northwindUserContext.Database.Migrate();
+            northwindUserContext.EnsureSeedDataForContext();
 
             //call identity server
             app.UseIdentityServer();

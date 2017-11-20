@@ -14,12 +14,19 @@ using Microsoft.AspNetCore.Authorization;
 using IdentityModel.Client;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
+using Northwind.UI.Web.Services;
 
 namespace Northwind.UI.Web.Controllers
 {
     [Authorize]
     public class HomeController : Controller
     {
+        private readonly INorthwindHttpClient _northwindHttpClient;
+
+        public HomeController(INorthwindHttpClient northwindHttpClient)
+        {
+            this._northwindHttpClient = northwindHttpClient;
+        }
         public IActionResult Index()
         {            
             return View();
@@ -46,8 +53,10 @@ namespace Northwind.UI.Web.Controllers
 
         public async Task<IActionResult> CustomerList(int page = 1)
         {
-            var client = NorthwindTrackerHttpClient.GetClient();
-            HttpResponseMessage httpResponse = await client.GetAsync($"api/customers?pageNumber={page}&pageSize=10");
+            
+            var clienthttp = _northwindHttpClient.GetClient();
+            
+            HttpResponseMessage httpResponse = await clienthttp.Result.GetAsync($"api/customers?pageNumber={page}&pageSize=10");
 
             if (httpResponse.IsSuccessStatusCode)
             {
@@ -65,10 +74,13 @@ namespace Northwind.UI.Web.Controllers
 
                 return View(viewmodel);
             }
-            else
+            else if(httpResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized ||
+                httpResponse.StatusCode == System.Net.HttpStatusCode.Forbidden)
             {
-                return Content("An error occurred!");
+                return RedirectToAction("AccessDenied","Authorization");
             }
+
+            throw new Exception($"A problem happened while calling the API: {httpResponse.ReasonPhrase}");
         }
 
         public IActionResult CreateCustomer()
@@ -82,11 +94,11 @@ namespace Northwind.UI.Web.Controllers
             try
             {
                 customer.CreationTime = DateTime.Now;
-                var client = NorthwindTrackerHttpClient.GetClient();
+                var clienthttp = _northwindHttpClient.GetClient();
 
                 var serealizeItemToCreate = JsonConvert.SerializeObject(customer);
 
-                var response = await client.PostAsync($"api/customers",
+                var response = await clienthttp.Result.PostAsync($"api/customers",
                     new StringContent(serealizeItemToCreate,
                     System.Text.Encoding.Unicode,"application/json"));
 
@@ -108,9 +120,13 @@ namespace Northwind.UI.Web.Controllers
 
         public async Task<IActionResult> Edit(string id)
         {
-            var client = NorthwindTrackerHttpClient.GetClient();
 
-            HttpResponseMessage response = await client.GetAsync($"api/customers/"+id);
+            var ownerId = User.Claims.FirstOrDefault(c => c.Type == "sub").Value;
+
+
+            var clienthttp = _northwindHttpClient.GetClient();
+
+            HttpResponseMessage response = await clienthttp.Result.GetAsync($"api/customers/"+id);
 
             if (response.IsSuccessStatusCode)
             {
@@ -126,7 +142,7 @@ namespace Northwind.UI.Web.Controllers
         {
             try
             {
-                var client = NorthwindTrackerHttpClient.GetClient();
+                var clienthttp = _northwindHttpClient.GetClient();
 
                 //partial edit
                 JsonPatchDocument<CustomerForCreationDto> patchDocument = new JsonPatchDocument<CustomerForCreationDto>();
@@ -136,7 +152,7 @@ namespace Northwind.UI.Web.Controllers
 
                 var serializedItemToUpdate = JsonConvert.SerializeObject(patchDocument);
 
-                var response = await client.PatchAsync($"api/customers/" + id,
+                var response = await clienthttp.Result.PatchAsync($"api/customers/" + id,
                     new StringContent(serializedItemToUpdate, System.Text.Encoding.Unicode, "application/json"));
 
                 ////serealize & PUT
@@ -165,8 +181,8 @@ namespace Northwind.UI.Web.Controllers
         {
             try
             {
-                var client = NorthwindTrackerHttpClient.GetClient();
-                var response = await client.DeleteAsync($"api/customers/" + id);
+                var clienthttp = _northwindHttpClient.GetClient();
+                var response = await clienthttp.Result.DeleteAsync($"api/customers/" + id);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -184,12 +200,38 @@ namespace Northwind.UI.Web.Controllers
         }
 
         public async Task Logout()
-        {            
-            await AuthenticationHttpContextExtensions.SignOutAsync(HttpContext,"Cookies");
+        {
+            //get data metada
+            var discoveryClient = new DiscoveryClient("https://localhost:44384/");
+            var metaDataResponse = await discoveryClient.GetAsync();
+
+            // create a TokenRevocationClient
+            var revocationClient = new TokenRevocationClient(
+                metaDataResponse.RevocationEndpoint,
+                "northwindclient",
+                "secret"
+                );
+
+            // get the access token to revoke
+            var accessToken = await HttpContext.GetTokenAsync(OpenIdConnectParameterNames.AccessToken);
+
+            if (!string.IsNullOrWhiteSpace(accessToken))
+            {
+                var revokeAccesstokenResponse =
+                    await revocationClient.RevokeAccessTokenAsync(accessToken);
+                if (revokeAccesstokenResponse.IsError)
+                {
+                    throw new Exception("Problem encountered while revoking the access token.",
+                        revokeAccesstokenResponse.Exception);
+                }
+            }
+
+            await AuthenticationHttpContextExtensions.SignOutAsync(HttpContext, "Cookies");
             await AuthenticationHttpContextExtensions.SignOutAsync(HttpContext, "oidc");
             //await HttpContext.Authentication.SignOutAsync("Cookies");
         }
 
+        [Authorize(Roles = "PayingUser")]
         public async Task<IActionResult> OrderFrame()
         {
             var discoveryClient = new DiscoveryClient("https://localhost:44384/");

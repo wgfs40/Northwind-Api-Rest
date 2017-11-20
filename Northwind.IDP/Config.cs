@@ -57,6 +57,18 @@ namespace Northwind.IDP
             };
         }
 
+        public static IEnumerable<ApiResource> GetApiResources()
+        {
+            return new List<ApiResource>
+            {
+                new ApiResource("northwindapi","North Wind API",new List<string>(){ "role"})
+                {
+                    ApiSecrets = { new Secret("apisecret".Sha256())}
+                }
+                
+            };
+        }
+
         public static IEnumerable<Client> GetClients()
         {
             return new List<Client>()
@@ -65,7 +77,13 @@ namespace Northwind.IDP
                     ClientName = "Northwind Systems",
                     ClientId = "northwindclient",
                     AllowedGrantTypes = GrantTypes.Hybrid,
-                    RequireConsent = false,
+                    AccessTokenType = AccessTokenType.Reference,
+                    RequireConsent = true,
+                    AccessTokenLifetime = 120,
+
+                    UpdateAccessTokenClaimsOnRefresh = true,
+                    AllowOfflineAccess = true,
+
                     RedirectUris = new List<string>()
                     {
                         "https://localhost:44372/signin-oidc"
@@ -75,7 +93,8 @@ namespace Northwind.IDP
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Address,
-                        "roles"
+                        "roles",
+                        "northwindapi"
                     },                    
                     ClientSecrets =
                     {

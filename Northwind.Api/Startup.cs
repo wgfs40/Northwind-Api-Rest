@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Newtonsoft.Json.Serialization;
+using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Northwind.Api
 {
@@ -24,6 +26,7 @@ namespace Northwind.Api
         }
 
         public IConfigurationRoot Configuration { get; }
+        
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -41,6 +44,21 @@ namespace Northwind.Api
             //register DBContext container
             var connectionstring = Configuration["connectionString:NorthDBConectionString"];
             services.AddDbContext<NorthwindContext>(o => o.UseSqlServer(connectionstring));
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;//"Cookies";                
+                options.DefaultChallengeScheme = "oidc";
+                options.DefaultAuthenticateScheme = "oidc";
+            })
+             .AddIdentityServerAuthentication("oidc", options => {
+                    options.ApiName = "northwindapi";
+                    options.Authority = "https://localhost:44384/";
+                    options.RequireHttpsMetadata = true;
+                 options.ApiSecret = "apisecret";
+                });
+
+            
 
             //Register Repository            
             RegisterServicesGeneric.Register(services);
@@ -69,6 +87,8 @@ namespace Northwind.Api
             AutoMapper.Mapper.Initialize(cfg => {                
                 MapperGeneric.CofigurationMapper(cfg);
             });
+
+            app.UseAuthentication();
 
             app.UseMvc();
         }
