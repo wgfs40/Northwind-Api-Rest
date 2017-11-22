@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Marvin.IDP.Entities
+namespace Northwind.IDP.Entities
 {
     [Table("UserLogins")]
     public class UserLogin

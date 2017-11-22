@@ -53,6 +53,12 @@ namespace Northwind.IDP
                     Name = "roles",
                     UserClaims = new List<string>{"role"},
                     DisplayName = "Your role(s)"
+                },
+                new IdentityResource
+                {
+                    Name="subscriptionlevel",
+                    DisplayName="Your subscription level",
+                    UserClaims = new List<string>{ "subscriptionlevel" }
                 }
             };
         }
@@ -94,7 +100,8 @@ namespace Northwind.IDP
                         IdentityServerConstants.StandardScopes.Profile,
                         IdentityServerConstants.StandardScopes.Address,
                         "roles",
-                        "northwindapi"
+                        "northwindapi",
+                        "subscriptionlevel"
                     },                    
                     ClientSecrets =
                     {

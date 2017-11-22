@@ -30,6 +30,18 @@ namespace Northwind.UI.Web
         {
             services.AddMvc();
 
+            // add an authorization policy
+            services.AddAuthorization(authorizationOptions => {
+                authorizationOptions.AddPolicy(
+                    "CanOrderFrame",
+                    policyBuilder =>
+                    {
+                        policyBuilder.RequireAuthenticatedUser();
+                        policyBuilder.RequireClaim("subscriptionlevel","PayingUser");
+                    }
+                );
+            });
+
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -58,6 +70,7 @@ namespace Northwind.UI.Web
                 options.ClientSecret = "secret";
                 options.GetClaimsFromUserInfoEndpoint = true;
                 options.ClaimActions.MapUniqueJsonKey("role", "role");
+                options.ClaimActions.MapUniqueJsonKey("subscriptionlevel", "subscriptionlevel");
                 
                 
                 options.Scope.Clear();
@@ -66,6 +79,7 @@ namespace Northwind.UI.Web
                 options.Scope.Add("address");
                 options.Scope.Add("roles");
                 options.Scope.Add("northwindapi");
+                options.Scope.Add("subscriptionlevel");
                 options.Scope.Add("offline_access");
 
                 options.Events = new OpenIdConnectEvents()

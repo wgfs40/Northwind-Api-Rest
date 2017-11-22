@@ -1,4 +1,4 @@
-﻿using Marvin.IDP.Entities;
+﻿using Northwind.IDP.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

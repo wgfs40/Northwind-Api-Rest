@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Marvin.IDP.Entities
+namespace Northwind.IDP.Entities
 {
     public static class NorthwindUserContextExtensions
     {

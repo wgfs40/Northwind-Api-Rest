@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Marvin.IDP.Entities
+namespace Northwind.IDP.Entities
 {
     public class NorthwindUserContext : DbContext
     {
@@ -11,5 +11,11 @@ namespace Marvin.IDP.Entities
         }
 
         public DbSet<User> Users { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {          
+            
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

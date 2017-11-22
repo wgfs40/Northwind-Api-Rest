@@ -31,7 +31,7 @@ namespace Northwind.UI.Web.Helpers
             // should we renew access & refresh tokens?
             // get expires_at value
             var expires_at = await _httpContextAccessor.HttpContext.GetTokenAsync("expires_at");
-
+            
             // compare - make sure to use the exact date formats for comparison
             // (UTC, in this case)
             if (string.IsNullOrWhiteSpace(expires_at)

@@ -2,9 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Marvin.IDP.Entities
+namespace Northwind.IDP.Entities
 {
-    [Table("Users")]
+    [Table("Users",Schema ="dbo")]
     public class User
     {
         [Key]
@@ -20,6 +20,12 @@ namespace Marvin.IDP.Entities
 
         [Required]
         public bool IsActive { get; set; }
+
+        public string Email { get; set; }
+
+        public int TipoDocumento { get; set; }
+
+        public string Documento { get; set; }
 
         public ICollection<UserClaim> Claims { get; set; } = new List<UserClaim>();
 

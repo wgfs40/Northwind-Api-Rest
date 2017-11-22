@@ -9,8 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
-using Marvin.IDP.Entities;
 using Northwind.IDP.Services;
+using Northwind.IDP.Entities;
 
 namespace Northwind.IDP
 {
@@ -21,7 +21,7 @@ namespace Northwind.IDP
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = _configuration["connectionString:NorthwindConnection"];
+            var connectionString = "Data Source=GDSDW12;Initial Catalog=NorthwindUserDB;User ID=sa;Password=wilson11;MultipleActiveResultSets=true";
             services.AddDbContext<NorthwindUserContext>(o => o.UseSqlServer(connectionString));
 
             services.AddScoped<INorthwindUserRepository, NorthwindUserRepository>();
@@ -32,7 +32,7 @@ namespace Northwind.IDP
             //configuration identity server
             services.AddIdentityServer()
                 .AddDeveloperSigningCredential()
-                .AddTestUsers(Config.Users)
+                .AddNorthwindUserStore()
                 .AddInMemoryApiResources(Config.GetApiResources())
                 .AddInMemoryIdentityResources(Config.GetIdentityResources())
                 .AddInMemoryClients(Config.GetClients());

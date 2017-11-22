@@ -11,17 +11,17 @@ namespace Northwind.IDP.Services
 { 
     public class NorthwindUserProfileService : IProfileService
     {
-        private readonly INorthwindUserRepository _marvinUserRepository;
+        private readonly INorthwindUserRepository _northwindUserRepository;
 
         public NorthwindUserProfileService(INorthwindUserRepository marvinUserRepository)
         {
-            _marvinUserRepository = marvinUserRepository;
+            _northwindUserRepository = marvinUserRepository;
         }
 
         public Task GetProfileDataAsync(ProfileDataRequestContext context)
         {
             var subjectId = context.Subject.GetSubjectId();
-            var claimsForUser = _marvinUserRepository.GetUserClaimsBySubjectId(subjectId);
+            var claimsForUser = _northwindUserRepository.GetUserClaimsBySubjectId(subjectId);
 
             context.IssuedClaims = claimsForUser.Select
               (c => new Claim(c.ClaimType, c.ClaimValue)).ToList();
@@ -32,7 +32,7 @@ namespace Northwind.IDP.Services
         public Task IsActiveAsync(IsActiveContext context)
         {
             var subjectId = context.Subject.GetSubjectId();
-            context.IsActive = _marvinUserRepository.IsUserActive(subjectId);
+            context.IsActive = _northwindUserRepository.IsUserActive(subjectId);
 
             return Task.FromResult(0);
         }

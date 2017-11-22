@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Marvin.IDP.Entities
+namespace Northwind.IDP.Entities
 {
     [Table("Claims")]
     public class UserClaim

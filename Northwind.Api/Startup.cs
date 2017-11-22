@@ -55,7 +55,7 @@ namespace Northwind.Api
                     options.ApiName = "northwindapi";
                     options.Authority = "https://localhost:44384/";
                     options.RequireHttpsMetadata = true;
-                 options.ApiSecret = "apisecret";
+                    options.ApiSecret = "apisecret";
                 });
 
             
