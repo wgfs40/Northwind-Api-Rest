@@ -11,9 +11,10 @@ using System;
 namespace Northwind.IDP.Migrations
 {
     [DbContext(typeof(NorthwindUserContext))]
-    partial class NorthwindUserContextModelSnapshot : ModelSnapshot
+    [Migration("20171122210419_documentos")]
+    partial class documentos
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

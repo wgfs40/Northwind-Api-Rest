@@ -45,7 +45,13 @@ namespace Northwind.IDP.Controllers.UserRegistration
                 var usertoCreate = new Entities.User();
                 usertoCreate.Password = model.Password;
                 usertoCreate.Username = model.Username;
+                usertoCreate.TipoDocumento = int.Parse(model.DocumentoId.ToString());
+                usertoCreate.Documento = model.Documento;
+                usertoCreate.Email = model.Email;
                 usertoCreate.IsActive = true;
+
+
+
                 usertoCreate.Claims.Add(new Entities.UserClaim("country", model.Country));
                 usertoCreate.Claims.Add(new Entities.UserClaim("address", model.Address));
                 usertoCreate.Claims.Add(new Entities.UserClaim("given_name", model.Firstname));

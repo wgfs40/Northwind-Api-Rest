@@ -25,6 +25,10 @@
                                     <input class="form-control" placeholder="Password" asp-for="Password" autocomplete="off" />
                                 </div>
                                 <div class="form-group">
+                                    <label asp-for="ConfirmPassword"></label>
+                                    <input class="form-control" placeholder="Confirm Password" asp-for="ConfirmPassword" autocomplete="off" />
+                                </div>
+                                <div class="form-group">
                                     <label asp-for="Firstname"></label>
                                     <input class="form-control" placeholder="Firstname" asp-for="Firstname" />
                                 </div>
@@ -47,7 +51,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="TipoDocumento"></label>
-                                    <select class="form-control" asp-items="@Model.TipoDocumento"></select>
+                                    <select class="form-control" asp-for="DocumentoId" asp-items="@Model.TipoDocumento"></select>
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="Documento"></label>

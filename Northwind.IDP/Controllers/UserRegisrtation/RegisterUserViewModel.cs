@@ -13,6 +13,7 @@ namespace Northwind.IDP.Controllers.UserRegistation
         [Required]
         public string Password { get; set; }
         [Compare("Password",ErrorMessage ="El password no es igual, favor de confirmar")]
+        [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }
         //claims
         [Required]
@@ -39,7 +40,7 @@ namespace Northwind.IDP.Controllers.UserRegistation
                     new{ Id="RD", Value="Dominican Republic"}},"Id","Value");
 
         public string Documento { get; set; }
-
+        public string DocumentoId { get; set; }
         public SelectList TipoDocumento { get; set; } =
             new SelectList(new[] {
                 new{ Id = "1", Value="Cedula"},

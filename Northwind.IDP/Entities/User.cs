@@ -31,6 +31,7 @@ namespace Northwind.IDP.Entities
 
         public ICollection<UserLogin> Logins { get; set; } = new List<UserLogin>();
 
+        public ICollection<TipoDocumento> TipoDocumentos { get; set; } = new List<TipoDocumento>();
 
     }
 }
