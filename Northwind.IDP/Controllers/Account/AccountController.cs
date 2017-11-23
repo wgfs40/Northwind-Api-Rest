@@ -101,10 +101,10 @@ namespace Northwind.IDP.Controllers.Account
             if (ModelState.IsValid)
             {
                 // validate username/password against in-memory store
-                if (_northwindUserRepository.AreUserCredentialsValid(model.Username, model.Password))
+                if (_northwindUserRepository.AreUserCredentialsValid(model.Email, model.Password))
                 {
-                    var user = _northwindUserRepository.GetUserByUsername(model.Username);
-                    await _events.RaiseAsync(new UserLoginSuccessEvent(user.Username, user.SubjectId, user.Username));
+                    var user = _northwindUserRepository.GetUserByemail(model.Email);
+                    await _events.RaiseAsync(new UserLoginSuccessEvent(user.Email, user.SubjectId, user.Email));
 
                     // only set explicit expiration here if user chooses "remember me". 
                     // otherwise we rely upon expiration configured in cookie middleware.
@@ -118,8 +118,8 @@ namespace Northwind.IDP.Controllers.Account
                         };
                     };
 
-                    // issue authentication cookie with subject ID and username
-                    await HttpContext.SignInAsync(user.SubjectId, user.Username, props);
+                    // issue authentication cookie with subject ID and email
+                    await HttpContext.SignInAsync(user.SubjectId, user.Email, props);
 
                     // make sure the returnUrl is still valid, and if so redirect back to authorize endpoint or a local page
                     if (_interaction.IsValidReturnUrl(model.ReturnUrl) || Url.IsLocalUrl(model.ReturnUrl))
@@ -130,7 +130,7 @@ namespace Northwind.IDP.Controllers.Account
                     return Redirect("~/");
                 }
 
-                await _events.RaiseAsync(new UserLoginFailureEvent(model.Username, "invalid credentials"));
+                await _events.RaiseAsync(new UserLoginFailureEvent(model.Email, "invalid credentials"));
 
                 ModelState.AddModelError("", AccountOptions.InvalidCredentialsErrorMessage);
             }

@@ -22,6 +22,6 @@ namespace Northwind.IDP.Controllers.Account
         // specify the Windows authentication scheme and display name
         public static readonly string WindowsAuthenticationSchemeName = "Windows";
 
-        public static string InvalidCredentialsErrorMessage = "Invalid username or password";
+        public static string InvalidCredentialsErrorMessage = "Invalid Email or password";
     }
 }

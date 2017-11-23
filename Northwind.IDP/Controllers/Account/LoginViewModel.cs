@@ -18,5 +18,9 @@ namespace Northwind.IDP.Controllers.Account
 
         public bool IsExternalLoginOnly => EnableLocalLogin == false && ExternalProviders?.Count() == 1;
         public string ExternalLoginScheme => ExternalProviders?.SingleOrDefault()?.AuthenticationScheme;
+
+        //public string Username { get; internal set; }
+        
+
     }
 }

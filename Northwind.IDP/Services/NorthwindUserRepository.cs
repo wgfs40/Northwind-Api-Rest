@@ -16,10 +16,10 @@ namespace Northwind.IDP.Services
             _context = context;
         }
 
-        public bool AreUserCredentialsValid(string username, string password)
+        public bool AreUserCredentialsValid(string email, string password)
         {
             // get the user
-            var user = GetUserByUsername(username);
+            var user = GetUserByemail(email);
             if (user == null)
             {
                 return false;
@@ -48,6 +48,12 @@ namespace Northwind.IDP.Services
         public User GetUserByUsername(string username)
         {
             return _context.Users.FirstOrDefault(u => u.Username == username);
+        }
+
+        public User GetUserByemail(string email)
+        {
+            return _context.Users.FirstOrDefault(u => u.Email == email);
+            
         }
 
         public IEnumerable<UserClaim> GetUserClaimsBySubjectId(string subjectId)
@@ -132,6 +138,7 @@ namespace Northwind.IDP.Services
             }
         }
 
+       
     }
 }
    

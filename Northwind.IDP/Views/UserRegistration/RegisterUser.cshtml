@@ -21,33 +21,16 @@
                                     <input class="form-control" placeholder="UserName" asp-for="Username" autofocus />
                                 </div>
                                 <div class="form-group">
+                                    <label asp-for="Email"></label>
+                                    <input class="form-control" placeholder="Email" asp-for="Email" />
+                                </div>
+                                <div class="form-group">
                                     <label asp-for="Password"></label>
                                     <input class="form-control" placeholder="Password" asp-for="Password" autocomplete="off" />
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="ConfirmPassword"></label>
                                     <input class="form-control" placeholder="Confirm Password" asp-for="ConfirmPassword" autocomplete="off" />
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="Firstname"></label>
-                                    <input class="form-control" placeholder="Firstname" asp-for="Firstname" />
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="Lastname"></label>
-                                    <input class="form-control" placeholder="LastName" asp-for="Lastname" />
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="Email"></label>
-                                    <input class="form-control" placeholder="Email" asp-for="Email" />
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="Address"></label>
-                                    <input class="form-control" placeholder="Address" asp-for="Address" />
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="Country"></label>
-                                    <select class="form-control" asp-for="Country" asp-items="@Model.Countrycodes">                                        
-                                    </select>
                                 </div>
                                 <div class="form-group">
                                     <label asp-for="TipoDocumento"></label>
@@ -57,7 +40,23 @@
                                     <label asp-for="Documento"></label>
                                     <input class="form-control" placeholder="Documento a digitar" asp-for="Documento" />
                                 </div>
-
+                                <div class="form-group">
+                                    <label asp-for="Firstname"></label>
+                                    <input class="form-control" placeholder="Firstname" asp-for="Firstname" />
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Lastname"></label>
+                                    <input class="form-control" placeholder="LastName" asp-for="Lastname" />
+                                </div>                                
+                                <div class="form-group">
+                                    <label asp-for="Address"></label>
+                                    <input class="form-control" placeholder="Address" asp-for="Address" />
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Country"></label>
+                                    <select class="form-control" asp-for="Country" asp-items="@Model.Countrycodes">                                        
+                                    </select>
+                                </div>
                                 <div class="form-group">
                                     <button class="btn btn-primary">Register</button>
                                 </div>

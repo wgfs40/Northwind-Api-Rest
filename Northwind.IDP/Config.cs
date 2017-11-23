@@ -84,7 +84,7 @@ namespace Northwind.IDP
                     ClientId = "northwindclient",
                     AllowedGrantTypes = GrantTypes.Hybrid,
                     AccessTokenType = AccessTokenType.Reference,
-                    RequireConsent = true,
+                    RequireConsent = false,
                     AccessTokenLifetime = 120,
 
                     UpdateAccessTokenClaimsOnRefresh = true,
