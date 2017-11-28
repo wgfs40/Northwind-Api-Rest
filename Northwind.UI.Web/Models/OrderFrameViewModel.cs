@@ -9,9 +9,12 @@ namespace Northwind.UI.Web.Models
     {
         public string Address { get; private set; } = string.Empty;
 
-        public OrderFrameViewModel(string address)
+        public List<string> Claims { get; set; } = new List<string>();
+
+        public OrderFrameViewModel(string address,List<string>claims = null)
         {
             this.Address = address;
+            this.Claims = claims;
         }
     }
 }

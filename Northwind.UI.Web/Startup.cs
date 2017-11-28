@@ -60,7 +60,7 @@ namespace Northwind.UI.Web
             {
                 options.SignInScheme = "Cookies";
 
-                options.Authority = "https://localhost:44384/";
+                options.Authority = "https://localhost:44384/"; 
                 options.RequireHttpsMetadata = true;
                 
 
@@ -100,7 +100,6 @@ namespace Northwind.UI.Web
                         var ticket = new AuthenticationTicket(new ClaimsPrincipal(newClaimsIdentity), tokenValidatedContext.Properties, tokenValidatedContext.Scheme.Name);
                         tokenValidatedContext.Principal = ticket.Principal;
                         
-                        
                         return Task.FromResult(0);
                     },
                     OnUserInformationReceived = UserInformationReceivedContext =>
@@ -121,8 +120,7 @@ namespace Northwind.UI.Web
                     }                    
                 };
 
-            });
-            services.AddTransient<IClaimsTransformation, ClaimsTransformer>();
+            });            
             services.AddScoped<INorthwindHttpClient, NorthwindTrackerHttpClient>();
         }
 

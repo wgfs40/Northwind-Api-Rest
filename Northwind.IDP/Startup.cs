@@ -13,6 +13,7 @@ using Northwind.IDP.Services;
 using Northwind.IDP.Entities;
 using System.Reflection;
 using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.AspNetCore.Identity;
 
 namespace Northwind.IDP
 {

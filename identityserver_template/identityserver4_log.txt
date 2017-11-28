@@ -1,0 +1,11 @@
+2017-11-24 10:20:21.270 -04:00 [INF] You are using the in-memory version of the persisted grant store. This will store consent decisions, authorization codes, refresh and reference tokens in memory only. If you are using any of those features in production, you want to switch to a different store implementation.
+2017-11-24 10:20:21.308 -04:00 [DBG] Using Identity.Application as default scheme for authentication
+2017-11-24 10:20:21.310 -04:00 [DBG] Using Identity.External as default scheme for sign-in
+2017-11-24 10:20:21.311 -04:00 [DBG] Using Identity.External as default scheme for sign-out
+2017-11-24 10:20:21.312 -04:00 [DBG] Using Identity.Application as default scheme for challenge
+2017-11-24 10:20:21.312 -04:00 [DBG] Using Identity.Application as default scheme for forbid
+2017-11-24 10:25:32.145 -04:00 [DBG] Using idsrv as default scheme for authentication
+2017-11-24 10:25:32.171 -04:00 [DBG] Using idsrv as default scheme for sign-in
+2017-11-24 10:25:32.171 -04:00 [DBG] Using idsrv as default scheme for sign-out
+2017-11-24 10:25:32.171 -04:00 [DBG] Using idsrv as default scheme for challenge
+2017-11-24 10:25:32.171 -04:00 [DBG] Using idsrv as default scheme for forbid

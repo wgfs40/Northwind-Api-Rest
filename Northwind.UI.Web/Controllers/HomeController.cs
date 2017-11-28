@@ -237,11 +237,25 @@ namespace Northwind.UI.Web.Controllers
             var discoveryClient = new DiscoveryClient("https://localhost:44384/");
             var metaDataResponse = await discoveryClient.GetAsync();
 
+
             var userInfoClient = new UserInfoClient(metaDataResponse.UserInfoEndpoint);
+
+            //var responseClaim = await userInfoClient.GetAsync(metaDataResponse.TokenEndpoint);
+            //var claims = responseClaim.Claims;
+
+            
 
             var accessToken = await AuthenticationHttpContextExtensions.GetTokenAsync(HttpContext,OpenIdConnectParameterNames.AccessToken);
 
             var response = await userInfoClient.GetAsync(accessToken);
+
+           var cl = response.Claims;
+            List<string> claims = new List<string>();
+            foreach (var item in cl)
+            {
+                string s = string.Format($"{item.Type} : {item.Value}");
+                claims.Add(s);
+            }
 
             if (response.IsError)
             {
@@ -253,7 +267,7 @@ namespace Northwind.UI.Web.Controllers
 
             var address = response.Claims.FirstOrDefault(c => c.Type == "address")?.Value;
 
-            return View(new OrderFrameViewModel(address));
+            return View(new OrderFrameViewModel(address, claims));
         }
     }
 }
