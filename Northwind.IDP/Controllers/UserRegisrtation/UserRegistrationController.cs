@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Http;
 using Northwind.IDP.Controllers.UserRegistation;
 using Microsoft.AspNetCore.Identity;
 using Northwind.IDP.Entities;
+using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.Stores;
+using System.Threading;
 
 namespace Northwind.IDP.Controllers.UserRegistration
 {
@@ -19,13 +22,20 @@ namespace Northwind.IDP.Controllers.UserRegistration
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IHttpContextAccessor _httpContextAccessor;
         //private readonly UserManager<ApplicationUser> _userManager;
+        private ConfigurationDbContext _context;
+        private readonly IClientStore _clientStore;
+        private readonly IResourceStore _resourceStore;        
 
         public UserRegistrationController(INorthwindUserRepository northwindRepository,
-            IIdentityServerInteractionService interaction, IHttpContextAccessor httpContextAccessor)
+            IIdentityServerInteractionService interaction, IHttpContextAccessor httpContextAccessor,
+            ConfigurationDbContext context, IClientStore clientStore, IResourceStore resourceStore)
         {
             this._northwindRepository = northwindRepository;
             this._interaction = interaction;
-            this._httpContextAccessor = httpContextAccessor;            
+            this._httpContextAccessor = httpContextAccessor;
+            this._context = context;
+            this._clientStore = clientStore;
+            this._resourceStore = resourceStore;            
         }
 
         [HttpGet]
@@ -119,6 +129,32 @@ namespace Northwind.IDP.Controllers.UserRegistration
             // modelState invalid, return the view with the passed-in model
             // so changes can be made
             return View(model);
+        }
+
+        public IActionResult UserList()
+        {
+            var userlist = _northwindRepository.GetUserListActive();
+
+            return View(userlist);
+        }
+
+        public IActionResult Details(string id)
+        {
+            var userClaim = _northwindRepository.GetUserClaimsBySubjectId(id);
+            ViewBag.user = _northwindRepository.GetUserBySubjectId(id).Email;
+            
+            return View(userClaim);
+        }
+
+        public async Task<IActionResult> Resources()
+        {
+            var listResources = await _resourceStore.GetAllResourcesAsync();
+            var user = _northwindRepository.GetUserByUsername("wfernandez@wind.com.do");
+            var client = await _clientStore.FindClientByIdAsync("northwindclient");
+
+            ViewBag.Client = client;
+
+            return View(listResources);
         }
     }
 }

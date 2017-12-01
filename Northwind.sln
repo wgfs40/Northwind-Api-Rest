@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Northwind.UI.Web", "Northwi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Northwind.IDP", "Northwind.IDP\Northwind.IDP.csproj", "{8060CC26-0FC1-47C9-91B7-5FCA70BC0DC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "identityserver_template", "identityserver_template\identityserver_template.csproj", "{C2435644-088C-486D-8249-5BFBCE45E868}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "identityserver_template", "identityserver_template\identityserver_template.csproj", "{C2435644-088C-486D-8249-5BFBCE45E868}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

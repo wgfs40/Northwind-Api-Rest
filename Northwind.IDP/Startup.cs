@@ -43,6 +43,7 @@ namespace Northwind.IDP
                 _configuration["connectionStrings:identityServerdataDBConnectionString"];
 
             services.AddScoped<INorthwindUserRepository, NorthwindUserRepository>();
+            
 
             var migrationsAssembly = typeof(Startup)
                 .GetTypeInfo().Assembly.GetName().Name;

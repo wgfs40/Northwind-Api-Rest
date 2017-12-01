@@ -22,6 +22,7 @@
             {
                 foreach (var resource in Config.GetIdentityResources())
                 {
+                    
                     context.IdentityResources.Add(resource.ToEntity());
                 }
 

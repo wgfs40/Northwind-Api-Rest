@@ -15,6 +15,7 @@ namespace Northwind.IDP.Services
         User GetUserByProvider(string loginProvider, string providerKey);
         IEnumerable<UserLogin> GetUserLoginsBySubjectId(string subjectId);
         IEnumerable<UserClaim> GetUserClaimsBySubjectId(string subjectId);
+        IEnumerable<User> GetUserListActive();
         bool AreUserCredentialsValid(string email, string password);
         bool IsUserActive(string subjectId);
         void AddUser(User user);

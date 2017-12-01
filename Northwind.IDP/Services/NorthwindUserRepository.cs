@@ -47,13 +47,19 @@ namespace Northwind.IDP.Services
 
         public User GetUserByUsername(string username)
         {
-            return _context.Users.FirstOrDefault(u => u.Username == username);
+            return _context.Users.Include("Claims").FirstOrDefault(u => u.Username == username);
         }
 
         public User GetUserByemail(string email)
         {
             return _context.Users.FirstOrDefault(u => u.Email == email);
             
+        }
+
+        public IEnumerable<User> GetUserListActive()
+        {
+            var userlist = _context.Users.Where(u => u.IsActive == true).ToList();
+            return userlist;
         }
 
         public IEnumerable<UserClaim> GetUserClaimsBySubjectId(string subjectId)
@@ -137,7 +143,6 @@ namespace Northwind.IDP.Services
                 }
             }
         }
-
        
     }
 }

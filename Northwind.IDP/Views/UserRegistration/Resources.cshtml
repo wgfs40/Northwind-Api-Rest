@@ -1,0 +1,115 @@
+﻿@model IdentityServer4.Models.Resources
+@using IdentityServer4.Models
+    @{
+        var client = ViewBag.Client as Client;
+     }
+
+@if (Model.ApiResources.Count() > 0)
+{
+    <input type="button" value="Add Api Resources" class="btn btn-success" />
+
+    <h3>Api Resources</h3>
+    <table class="table table-condensed">
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>DisplayName</th>
+        </tr>
+        @foreach (var item in Model.ApiResources)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Description</td>
+                <td>@item.DisplayName</td>                
+            </tr>
+
+        }
+    </table>
+}
+
+@if (Model.IdentityResources.Count() > 0)
+{
+    <input type="button" value="Add Resources" class="btn btn-success" />
+
+    <h3>Identity Resources</h3>
+
+    <table class="table table-condensed">
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>DisplayName</th>
+            <th>User Claims</th>
+        </tr>
+        @foreach (var item in Model.IdentityResources)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Description</td>
+                <td>@item.DisplayName</td>
+                <td>
+                    @foreach(var itemclaim in item.UserClaims)
+                    {
+                        <p>@itemclaim</p>
+                    }
+                </td>
+            </tr>
+
+        }
+    </table>
+}
+<br />
+
+@Html.Partial("_Clients", client)
+
+
+
+<br />
+<div id="app">
+    <div class="col-md-6">
+        <input v-model="newTodoText" class="form-control" />
+        <br />
+        <select  class="form-control">
+            <option v-for="todo in todos" value="{{todo.id}}">{{todo.title}}</option>
+        </select>
+
+        <button v-on:click="AddNew">Click</button>
+    </div>
+    
+
+</div>
+@section scripts{ 
+<script type="text/javascript">
+        $(function () {
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    newTodoText: '',
+                    todos: [
+                        {
+                            id: 1,
+                            title: 'Do the dishes',
+                        },
+                        {
+                            id: 2,
+                            title: 'Take out the trash',
+                        },
+                        {
+                            id: 3,
+                            title: 'Mow the lawn'
+                        }
+                    ],
+                    nextTodoId: 4
+                },
+                methods: {
+                    AddNew: function () {
+                        this.todos.push({
+                            id: this.nextTodoId++,
+                            title: this.newTodoText
+                        });
+                    }
+                }
+            });
+        });
+</script>
+}
+

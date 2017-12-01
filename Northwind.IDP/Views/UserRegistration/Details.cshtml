@@ -1,0 +1,21 @@
+﻿@model IEnumerable<Northwind.IDP.Entities.UserClaim>
+
+    <h3>User/Claims -- @ViewBag.user</h3>
+    <table class="table table-bordered table-hover">
+    <tr>
+        <th>ID</th>
+        <th>Subject Id</th>
+        <th>Claim Type</th>
+        <th>Claim Value</th>
+    </tr>
+       @foreach(var item in Model)
+       {
+           <tr>
+               <td>@item.Id</td>
+               <td>@item.SubjectId</td>
+               <td>@item.ClaimType</td>
+               <td>@item.ClaimValue</td>
+           </tr>
+       }
+</table>
+

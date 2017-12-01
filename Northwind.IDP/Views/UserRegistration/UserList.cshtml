@@ -1,0 +1,22 @@
+﻿@model IEnumerable<Northwind.IDP.Entities.User>
+
+    <table class="table table-bordered table-hover">
+    <tr>
+        <th>Username</th>
+        <th>Documento</th>
+        <th>Email</th>
+        <th></th>
+    </tr>
+        @foreach(var item in Model)
+        {
+            <tr>
+                <td>@item.Username</td>
+                <td>@item.Documento</td>
+                <td>@item.Email</td>
+                <td>
+                    <a asp-controller="UserRegistration" asp-action="Details" asp-route-id="@item.SubjectId">Details</a>
+                </td>
+            </tr>
+
+        }
+</table>

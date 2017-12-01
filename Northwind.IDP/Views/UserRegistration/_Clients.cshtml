@@ -1,0 +1,89 @@
+﻿@model IdentityServer4.Models.Client
+
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+<input type="button" value="Add Client" class="btn btn-success" />
+
+<h3>Clients</h3>
+
+<table class="table">
+    <tr>
+        <td>Client Name:</td>
+        <td>@Model.ClientName</td>
+    </tr>
+    <tr>
+        <td>Client Id:</td>
+        <td>@Model.ClientId</td>
+    </tr>
+    <tr>
+        <td>Allowed Grant Types:</td>
+        <td>
+           @foreach(var item in @Model.AllowedGrantTypes)
+           {
+              @item
+           }
+        </td>
+    </tr>
+    <tr>
+        <td>Access Token Life Time:</td>
+        <td>@Model.AccessTokenLifetime</td>
+    </tr>    
+    <tr>
+        <td>Access Token Type:</td>
+        <td>@Model.AccessTokenType</td>
+    </tr>
+    <tr>
+        <td>Require Consent:</td>
+        <td>@Model.RequireConsent</td>
+    </tr>
+    <tr>
+        <td>Access Token Life Time:</td>
+        <td>@Model.AccessTokenLifetime</td>
+    </tr>
+    <tr>
+        <td>Update Access Token Claims On Refresh:</td>
+        <td>@Model.UpdateAccessTokenClaimsOnRefresh</td>
+    </tr>
+    <tr>
+        <td>Allow Off line Access:</td>
+        <td>@Model.AllowOfflineAccess</td>
+    </tr>
+    <tr>
+        <td>Redirect Uris:</td>
+        <td>
+           @foreach(var item in Model.RedirectUris)
+           {
+               @item
+           }
+        </td>
+    </tr>
+    <tr>
+        <td>Allowed Scopes:</td>
+        <td>
+             @foreach (var item in Model.AllowedScopes)
+             {
+                <p>@item</p>
+             }
+        </td>
+    </tr>
+    <tr>
+        <td>Client Secrets:</td>
+        <td>
+            @foreach (var item in Model.ClientSecrets)
+            {
+                <p>@item.Value</p>
+            }
+        </td>
+    </tr>
+    <tr>
+        <td>Post Logout Redirect Uris:</td>
+        <td>
+            @foreach (var item in Model.PostLogoutRedirectUris)
+            {
+                <p>@item</p>
+            }
+        </td>
+    </tr>
+</table>
