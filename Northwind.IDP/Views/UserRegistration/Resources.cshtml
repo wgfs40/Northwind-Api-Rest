@@ -4,6 +4,7 @@
         var client = ViewBag.Client as Client;
      }
 
+
 @if (Model.ApiResources.Count() > 0)
 {
     <input type="button" value="Add Api Resources" class="btn btn-success" />
@@ -29,7 +30,7 @@
 
 @if (Model.IdentityResources.Count() > 0)
 {
-    <input type="button" value="Add Resources" class="btn btn-success" />
+    <input type="button"  value="Add Resources" data-toggle="modal" data-target="#NewResource" class="btn btn-success" />
 
     <h3>Identity Resources</h3>
 
@@ -61,53 +62,182 @@
 
 @Html.Partial("_Clients", client)
 
-
-
-<br />
-<div id="app">
-    <div class="col-md-6">
-        <input v-model="newTodoText" class="form-control" />
-        <br />
-        <select  class="form-control">
-            <option v-for="todo in todos" value="{{todo.id}}">{{todo.title}}</option>
-        </select>
-
-        <button v-on:click="AddNew">Click</button>
-    </div>
-    
-
+<div id="NewClaim" class="modal" style="display:none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div id="myModalNewClaim"></div>
+                <div class="modal-footer">
+                    <button type="button" id="btn_save" class="btn btn-default">Guardar</button>
+                </div>
+            </div>
+        </div>
 </div>
+
+<template id="bs-modal">
+    <!--MODAL-->
+    <div class="modal fade" id="NewResource" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">New Resource </h4>
+                </div>
+                <div class="modal-body">
+                   @Html.Partial("_AddResources",new IdentityResource())
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" v-on:click="AddResource()" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<div class="container" id="el">
+    @*<div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Editor: {{query}}</h3>
+        </div>
+        <div class="panel-body">
+            <button type="button" class="btn btn-primary" >Modal</button>
+        </div>
+    </div>
+    <div class="text-center">--End of editor--</div>*@
+    <modal></modal>
+</div>
+
 @section scripts{ 
 <script type="text/javascript">
-        $(function () {
-            var app = new Vue({
-                el: '#app',
-                data: {
-                    newTodoText: '',
-                    todos: [
-                        {
-                            id: 1,
-                            title: 'Do the dishes',
-                        },
-                        {
-                            id: 2,
-                            title: 'Take out the trash',
-                        },
-                        {
-                            id: 3,
-                            title: 'Mow the lawn'
-                        }
-                    ],
-                    nextTodoId: 4
-                },
-                methods: {
-                    AddNew: function () {
-                        this.todos.push({
-                            id: this.nextTodoId++,
-                            title: this.newTodoText
-                        });
-                    }
+
+    Vue.component("modal", {
+        template: "#bs-modal",
+        data() {
+            return {
+                //enable : true,
+                //showinDiscoveryDocument : true
+            }
+        },
+        created: function () {
+        },
+        computed: {
+            enable: {
+                get: function () {
+                    return true;
                 }
+            },
+            name: {
+                get: function () {
+                    return "hola como estan";
+                },
+                set: function (newValue) {
+                    //this.enable = newValue;
+                }
+            },
+            displayname: {
+                get: function () {
+                    return "hola como estan";
+                },
+                set: function (newValue) {
+                    
+                    //this.val(newValue);
+                }
+            }
+
+        },
+        props: {
+            //enable: Boolean,
+            //name: String,
+            //displayname: String,
+            description: String,
+            required: Boolean,
+            emphasize: Boolean,
+            showinDiscoveryDocument: Boolean
+        },
+        methods: {
+            AddResource: function () {
+                var newResourceForm = "/UserRegistration/AddResource";
+                $.ajax({
+                    type: "GET",
+                    url: newResourceForm,
+                    contentType: "application/json; charset=utf-8",
+                    data: {
+                        DisplayName: this.displayname,
+                        Name: this.name,
+                        Description: this.description,
+                        Required: this.required,
+                        Emphasize: this.emphasize,
+                        ShowInDiscoveryDocument: this.showinDiscoveryDocument
+                    },
+                    //dataType: "json",
+                    success: function (data) {
+                        alert(data.result);
+                        //$("#myModalNewClaim").html(data);
+                        //$("#NewClaim").modal(options);
+                        //$("#NewResource").modal("hide");
+                        $("#NewResource").on("hidden", function (data) {
+                            $(this).data("modal", null);
+                        });
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            }
+        }
+    });
+
+    var vm = new Vue({
+        el: "#el",
+        data: {
+
+        }
+    });
+
+
+
+
+    $(function () {  
+
+            var newClaimForm = "/UserRegistration/NewClaim";
+
+            $("#ClickNew").click(function () {
+
+                var options = { "backdrop": "Static", keyboard: true };
+
+                $.ajax({
+                    type: "GET",
+                    url: newClaimForm,
+                    contentType: "application/json; charset=utf-8",
+                    data: {},
+                    //dataType: "json",
+                    success: function (data) {
+                        $("#myModalNewClaim").html(data);
+                        $("#NewClaim").modal(options);
+                        $("#NewClaim").modal("show");
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+
+                $("#btn_save").click(function () {
+                    var client = {
+                        ClientId: $("#client_id").val(),
+                        ClientName: $("#client_name").val()
+                    };
+
+                    var RedirectUri = $("#redirect").val();
+                    var AllowedScopes = $("#allowScope").val();
+                    var PostLogoutRedirectUri = $("#logout_redirect").val();
+                    var ClientSecrets = $("#clientsecret").val();
+
+                    $.post("/userregistration/SaveClaim", { clientids: client, redirect: RedirectUri, allow: AllowedScopes, postlogout: PostLogoutRedirectUri, clientsecret: ClientSecrets }, function (data) {
+                        alert("Saved!!!" + data.alert);
+                        $("#NewClaim").modal("hide");
+                    });
+
+                });
             });
         });
 </script>

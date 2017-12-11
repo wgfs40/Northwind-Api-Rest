@@ -3,16 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using Northwind.IDP.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.AspNetCore.Http;
 using Northwind.IDP.Controllers.UserRegistation;
-using Microsoft.AspNetCore.Identity;
-using Northwind.IDP.Entities;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.Stores;
-using System.Threading;
+using IdentityServer4.EntityFramework.Entities;
 
 namespace Northwind.IDP.Controllers.UserRegistration
 {
@@ -54,23 +50,6 @@ namespace Northwind.IDP.Controllers.UserRegistration
         {
             if (ModelState.IsValid)
             {
-
-                //var user = new ApplicationUser {
-                //     UserName = model.Email,
-                //     Email = model.Email,
-                //     IsActive = true,
-                //     TipoDocumento = int.Parse(model.DocumentoId.ToString()),
-                //     Documento = model.Documento
-                //};
-
-                //await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("country", model.Country));
-                //await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("address", model.Address));
-                //await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("given_name", model.Firstname));
-                //await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("family_name", model.Lastname));
-                //await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("email", model.Email));
-                //await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("subscriptionlevel", "FreeUser"));
-
-
                 //create user + claims
                 var usertoCreate = new Entities.User();
                 usertoCreate.Password = model.Password;
@@ -79,7 +58,6 @@ namespace Northwind.IDP.Controllers.UserRegistration
                 usertoCreate.Documento = model.Documento;
                 usertoCreate.Email = model.Email;
                 usertoCreate.IsActive = true;
-
 
                 usertoCreate.Claims.Add(new Entities.UserClaim("country", model.Country));
                 usertoCreate.Claims.Add(new Entities.UserClaim("address", model.Address));
@@ -90,23 +68,6 @@ namespace Northwind.IDP.Controllers.UserRegistration
 
                 //add it through the repository
                 _northwindRepository.AddUser(usertoCreate);
-
-                //var result = await _userManager.CreateAsync(user, model.Password);
-
-                //if (result.Errors.Count() > 0)
-                //{
-                //    throw new Exception($"Creating a user failed.");
-                //}
-
-                //if (result.Succeeded)
-                //{                    
-                //   await _httpContextAccessor.HttpContext.SignInAsync(user.Id, user.UserName);
-                //}
-
-                //if (_interaction.IsValidReturnUrl(model.ReturnUrl) || Url.IsLocalUrl(model.ReturnUrl))
-                //{
-                //    return Redirect(model.ReturnUrl);
-                //}
 
 
                 if (!_northwindRepository.Save())
@@ -150,11 +111,49 @@ namespace Northwind.IDP.Controllers.UserRegistration
         {
             var listResources = await _resourceStore.GetAllResourcesAsync();
             var user = _northwindRepository.GetUserByUsername("wfernandez@wind.com.do");
-            var client = await _clientStore.FindClientByIdAsync("northwindclient");
+            var client = await _clientStore.FindClientByIdAsync("wind");
 
             ViewBag.Client = client;
 
             return View(listResources);
+        }
+
+        public IActionResult NewClaim()
+        {            
+            return PartialView("_AddClaimUser");
+        }
+
+        
+        public IActionResult SaveClaim(Client clientids,string redirect,string allow, string postlogout,string clientsecret)
+        {
+            clientids.RedirectUris = new List<ClientRedirectUri>() { new ClientRedirectUri() { RedirectUri = redirect}}; 
+            clientids.AllowedScopes = new List<ClientScope>() { new ClientScope { Scope = allow } };
+            clientids.PostLogoutRedirectUris = new List<ClientPostLogoutRedirectUri>() { new ClientPostLogoutRedirectUri() { PostLogoutRedirectUri = postlogout } };
+            clientids.ClientSecrets = new List<ClientSecret>() { new ClientSecret() { Value = clientsecret } };
+
+            //informacion por default
+            clientids.AllowedGrantTypes = new List<ClientGrantType>() { new ClientGrantType() { GrantType = "Hybrid" } };
+            clientids.AccessTokenLifetime = 120;
+            clientids.AccessTokenType = 1; //AccessTokenType.Reference;
+            clientids.RequireConsent = false;
+            clientids.UpdateAccessTokenClaimsOnRefresh = true;
+            clientids.AllowOfflineAccess = true;
+
+
+            _context.Clients.Add(clientids);
+
+            if (_context.SaveChanges() > 0)
+            {
+                return Json(new { alert = "Datos guardato en la base de datos" });
+            }
+
+            return Json(new { alert = "paso algo"});
+
+        }
+
+        public IActionResult AddResource(IdentityResource resource)
+        {
+            return Json(new { result = "Datos guardados con exito!!!" });
         }
     }
 }
