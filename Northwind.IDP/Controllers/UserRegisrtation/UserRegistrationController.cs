@@ -153,6 +153,7 @@ namespace Northwind.IDP.Controllers.UserRegistration
 
         public IActionResult AddResource(IdentityResource resource)
         {
+
             return Json(new { result = "Datos guardados con exito!!!" });
         }
     }

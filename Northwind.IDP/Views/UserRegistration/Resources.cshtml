@@ -136,11 +136,20 @@
             },
             displayname: {
                 get: function () {
-                    return "hola como estan";
+                    return "hola como estan gabriel esto es vue";
                 },
                 set: function (newValue) {
                     
                     //this.val(newValue);
+                }
+            },
+            showinDiscoveryDocument: {
+                get: function () {
+                    return true;
+                },
+                set: function (newValue) {
+                    alert("el nuevo valor es: " + newValue)
+
                 }
             }
 
@@ -151,8 +160,8 @@
             //displayname: String,
             description: String,
             required: Boolean,
-            emphasize: Boolean,
-            showinDiscoveryDocument: Boolean
+            emphasize: Boolean
+            //showinDiscoveryDocument: Boolean
         },
         methods: {
             AddResource: function () {
