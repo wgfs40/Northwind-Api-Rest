@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace Web_App.ViewModels
+﻿namespace Web_App.ViewModels
 {
+    using Microsoft.AspNetCore.Identity;
+    using System.Collections.Generic;    
+
     public class ApplicationRoleClaim : IdentityRoleClaim<string>
-    {
-        public virtual List<ApplicationRole>Roles { get; set; }
+    {        
+        //public virtual List<ApplicationRole>Roles { get; set; }
     }
 }

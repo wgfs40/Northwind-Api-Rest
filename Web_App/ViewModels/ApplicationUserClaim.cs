@@ -8,6 +8,6 @@ namespace Web_App.ViewModels
 {
     public class ApplicationUserClaim : IdentityUserClaim<string>
     {     
-        public virtual List<ApplicationUser> Users { get; set; } 
+        //public virtual List<ApplicationUser> Users { get; set; } 
     }
 }

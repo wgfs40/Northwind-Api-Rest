@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Web_App.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Web_App
 {
@@ -33,17 +34,16 @@ namespace Web_App
 
             services.Configure<IdentityOptions>(options => {
                 //password settings
-                options.Password.RequireDigit = true;
-                options.Password.RequiredLength = 8;
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 6;
                 options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = true;
+                options.Password.RequireUppercase = false;
                 options.Password.RequireLowercase = false;
-                options.Password.RequiredUniqueChars = 6;
-
+                options.Password.RequiredUniqueChars = 4;
 
                 //lokout settings
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
-                options.Lockout.MaxFailedAccessAttempts = 10;
+                options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = true;
 
                 //user Settings
@@ -51,6 +51,10 @@ namespace Web_App
 
             });
 
+            services.AddAuthentication(options => {
+                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            }).AddCookie();
             services.AddMvc();
         }
 
@@ -67,6 +71,7 @@ namespace Web_App
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseAuthentication();
             app.UseStaticFiles();
 
             app.UseMvc(routes =>

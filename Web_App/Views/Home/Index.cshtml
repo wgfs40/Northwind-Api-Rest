@@ -2,6 +2,18 @@
     ViewData["Title"] = "Home Page";
 }
 
+@if (User.Identity.IsAuthenticated)
+{
+    <h2>Estan Autenticado,Welcome:  @User.Identity.Name</h2> 
+     <a asp-action="Logout" asp-controller="Account" class="btn btn-danger">Logout</a>    
+}
+else
+{
+    <h2>Bienvenido a la pagina</h2>
+    <a asp-action="login" asp-controller="Account" class="btn btn-success">Login</a>
+    <a asp-action="Register" asp-controller="Account" class="btn btn-default">Register</a>
+}
+
 <div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
     <ol class="carousel-indicators">
         <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
