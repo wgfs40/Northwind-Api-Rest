@@ -5,7 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ASPSMS" Version="0.0.2" />
     <PackageReference Include="IdentityServer4" Version="2.0.2" />
+    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.0.0" />
     <PackageReference Include="IdentityServer4.EntityFramework" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.0" />
@@ -15,8 +17,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.1" />
-    <PackageReference Include="Node" Version="1.0.0" />
-    <PackageReference Include="Npm" Version="3.5.2" />
+    <PackageReference Include="Sendgrid" Version="9.9.0" />
+    <PackageReference Include="Twilio" Version="5.9.2" />
+    <PackageReference Include="Twilio.AspNet.Core" Version="5.8.3" />
     <PackageReference Include="vue" Version="2.5.2" />
   </ItemGroup>
 

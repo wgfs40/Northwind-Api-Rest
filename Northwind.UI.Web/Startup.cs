@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Northwind.UI.Web.Helpers;
 using Northwind.UI.Web.Services;
+using Northwind.IDP.Services;
 
 namespace Northwind.UI.Web
 {
@@ -60,7 +61,7 @@ namespace Northwind.UI.Web
             {
                 options.SignInScheme = "Cookies";
 
-                options.Authority = "https://localhost:44384/"; 
+                options.Authority = "https://172.16.3.80/"; 
                 options.RequireHttpsMetadata = true;
                 
 
@@ -120,7 +121,8 @@ namespace Northwind.UI.Web
                     }                    
                 };
 
-            });            
+            });
+           
             services.AddScoped<INorthwindHttpClient, NorthwindTrackerHttpClient>();
         }
 
@@ -142,7 +144,7 @@ namespace Northwind.UI.Web
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Home}/{action=List}/{id?}");
             });
         }
     }

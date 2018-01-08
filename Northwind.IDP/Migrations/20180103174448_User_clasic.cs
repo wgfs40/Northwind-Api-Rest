@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using System;
 using System.Collections.Generic;
 
 namespace Northwind.IDP.Migrations
 {
-    public partial class InitialNorthwindUserDBMigration : Migration
+    public partial class User_clasic : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -17,8 +18,11 @@ namespace Northwind.IDP.Migrations
                 columns: table => new
                 {
                     SubjectId = table.Column<string>(maxLength: 50, nullable: false),
+                    Documento = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(nullable: true),
                     IsActive = table.Column<bool>(nullable: false),
                     Password = table.Column<string>(maxLength: 100, nullable: true),
+                    TipoDocumento = table.Column<int>(nullable: false),
                     Username = table.Column<string>(maxLength: 100, nullable: false)
                 },
                 constraints: table =>
@@ -48,6 +52,27 @@ namespace Northwind.IDP.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TipoDocumentos",
+                columns: table => new
+                {
+                    DocumentoID = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Description = table.Column<string>(nullable: true),
+                    UserSubjectId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TipoDocumentos", x => x.DocumentoID);
+                    table.ForeignKey(
+                        name: "FK_TipoDocumentos_Users_UserSubjectId",
+                        column: x => x.UserSubjectId,
+                        principalSchema: "dbo",
+                        principalTable: "Users",
+                        principalColumn: "SubjectId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserLogins",
                 columns: table => new
                 {
@@ -74,6 +99,11 @@ namespace Northwind.IDP.Migrations
                 column: "SubjectId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TipoDocumentos_UserSubjectId",
+                table: "TipoDocumentos",
+                column: "UserSubjectId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserLogins_SubjectId",
                 table: "UserLogins",
                 column: "SubjectId");
@@ -83,6 +113,9 @@ namespace Northwind.IDP.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Claims");
+
+            migrationBuilder.DropTable(
+                name: "TipoDocumentos");
 
             migrationBuilder.DropTable(
                 name: "UserLogins");

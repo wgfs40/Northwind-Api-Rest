@@ -17,8 +17,8 @@ using Microsoft.AspNetCore.Authentication;
 using Northwind.UI.Web.Services;
 
 namespace Northwind.UI.Web.Controllers
-{
-    [Authorize]
+{   
+    [Authorize]    
     public class HomeController : Controller
     {
         private readonly INorthwindHttpClient _northwindHttpClient;
@@ -27,7 +27,7 @@ namespace Northwind.UI.Web.Controllers
         {
             this._northwindHttpClient = northwindHttpClient;
         }
-        public IActionResult Index()
+        public IActionResult List()
         {            
             return View();
         }

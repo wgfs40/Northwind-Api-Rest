@@ -53,7 +53,7 @@ namespace Northwind.IDP.Services
         public User GetUserByemail(string email)
         {
             return _context.Users.FirstOrDefault(u => u.Email == email);
-            
+
         }
 
         public IEnumerable<User> GetUserListActive()
@@ -143,7 +143,7 @@ namespace Northwind.IDP.Services
                 }
             }
         }
-       
+
     }
 }
    

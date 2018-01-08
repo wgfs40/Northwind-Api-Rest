@@ -53,7 +53,7 @@ namespace Northwind.Api
             })
              .AddIdentityServerAuthentication("oidc", options => {
                     options.ApiName = "northwindapi";
-                    options.Authority = "https://localhost:44384/";
+                    options.Authority = "https://172.16.3.80/";
                     options.RequireHttpsMetadata = true;
                     options.ApiSecret = "apisecret";
                 });

@@ -19,6 +19,8 @@ using IdentityServer4.Events;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using Northwind.IDP.Services;
+using Microsoft.AspNetCore.Identity;
+using Northwind.IDP.Entities;
 
 namespace Northwind.IDP.Controllers.Account
 {
@@ -35,6 +37,9 @@ namespace Northwind.IDP.Controllers.Account
         private readonly IEventService _events;
         private readonly AccountService _account;
         private readonly INorthwindUserRepository _northwindUserRepository;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+
 
         public AccountController(
             IIdentityServerInteractionService interaction,
@@ -42,10 +47,14 @@ namespace Northwind.IDP.Controllers.Account
             IHttpContextAccessor httpContextAccessor,
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
-            INorthwindUserRepository northwindUserRepository)
+            INorthwindUserRepository northwindUserRepository,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager)
         {
             // if the TestUserStore is not in DI, then we'll just use the global users collection
             _northwindUserRepository = northwindUserRepository;
+            _userManager = userManager;
+            _signInManager = signInManager;
             //_users = users ?? new TestUserStore(TestUsers.Users);
             _interaction = interaction;
             _events = events;
@@ -101,35 +110,54 @@ namespace Northwind.IDP.Controllers.Account
             if (ModelState.IsValid)
             {
                 // validate username/password against in-memory store
-                if (_northwindUserRepository.AreUserCredentialsValid(model.Email, model.Password))
+                var getuser = await _userManager.FindByNameAsync(model.Email);
+
+                if (getuser != null)
                 {
-                    var user = _northwindUserRepository.GetUserByemail(model.Email);
-                    await _events.RaiseAsync(new UserLoginSuccessEvent(user.Email, user.SubjectId, user.Email));
-
-                    // only set explicit expiration here if user chooses "remember me". 
-                    // otherwise we rely upon expiration configured in cookie middleware.
-                    AuthenticationProperties props = null;
-                    if (AccountOptions.AllowRememberLogin && model.RememberLogin)
+                    var resultLogin = await _signInManager.PasswordSignInAsync(getuser, model.Password, false, true);
+                    if (resultLogin.Succeeded)
                     {
-                        props = new AuthenticationProperties
+                        if (resultLogin.IsLockedOut)
                         {
-                            IsPersistent = true,
-                            ExpiresUtc = DateTimeOffset.UtcNow.Add(AccountOptions.RememberMeLoginDuration)
+                            ModelState.AddModelError("", "La cuenta esta bloqueada, favor de comunarse con su supervisor!!.");
+                        }
+
+                        if (!getuser.EmailConfirmed)
+                        {
+                            await HttpContext.SignOutAsync();
+                            await _signInManager.SignOutAsync();
+                            return RedirectToAction("Confirmed");
+                        }
+
+                        await _events.RaiseAsync(new UserLoginSuccessEvent(getuser.Email, getuser.Id, getuser.Email));
+
+                        // only set explicit expiration here if user chooses "remember me". 
+                        // otherwise we rely upon expiration configured in cookie middleware.
+                        AuthenticationProperties props = null;
+                        if (AccountOptions.AllowRememberLogin && model.RememberLogin)
+                        {
+                            props = new AuthenticationProperties
+                            {
+                                IsPersistent = true,
+                                ExpiresUtc = DateTimeOffset.UtcNow.Add(AccountOptions.RememberMeLoginDuration)
+                            };
                         };
-                    };
 
-                    // issue authentication cookie with subject ID and email
-                    await HttpContext.SignInAsync(user.SubjectId, user.Email, props);
+                        // issue authentication cookie with subject ID and email
+                        await HttpContext.SignInAsync(getuser.Id, getuser.Email, props);
 
-                    // make sure the returnUrl is still valid, and if so redirect back to authorize endpoint or a local page
-                    if (_interaction.IsValidReturnUrl(model.ReturnUrl) || Url.IsLocalUrl(model.ReturnUrl))
-                    {
-                        return Redirect(model.ReturnUrl);
+                        // make sure the returnUrl is still valid, and if so redirect back to authorize endpoint or a local page
+                        if (_interaction.IsValidReturnUrl(model.ReturnUrl) || Url.IsLocalUrl(model.ReturnUrl))
+                        {
+                            return Redirect(model.ReturnUrl);
+                        }
+
+                        return Redirect("~/");
+
                     }
-
-                    return Redirect("~/");
                 }
 
+                //invalid credentials
                 await _events.RaiseAsync(new UserLoginFailureEvent(model.Email, "invalid credentials"));
 
                 ModelState.AddModelError("", AccountOptions.InvalidCredentialsErrorMessage);
@@ -140,6 +168,11 @@ namespace Northwind.IDP.Controllers.Account
             return View(vm);
         }
 
+
+        public IActionResult Confirmed()
+        {
+            return View();
+        }
         /// <summary>
         /// initiate roundtrip to external authentication provider
         /// </summary>
@@ -317,6 +350,7 @@ namespace Northwind.IDP.Controllers.Account
             {
                 // delete local authentication cookie
                 await HttpContext.SignOutAsync();
+                await _signInManager.SignOutAsync();
 
                 // raise the logout event
                 await _events.RaiseAsync(new UserLogoutSuccessEvent(user.GetSubjectId(), user.GetDisplayName()));

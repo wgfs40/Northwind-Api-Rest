@@ -11,9 +11,10 @@ using System;
 namespace Northwind.IDP.Migrations
 {
     [DbContext(typeof(NorthwindUserContext))]
-    partial class NorthwindUserContextModelSnapshot : ModelSnapshot
+    [Migration("20180103174118_Initital_Table")]
+    partial class Initital_Table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -194,98 +195,6 @@ namespace Northwind.IDP.Migrations
                     b.ToTable("ApplicationUserToken");
                 });
 
-            modelBuilder.Entity("Northwind.IDP.Entities.TipoDocumento", b =>
-                {
-                    b.Property<int>("DocumentoID")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("UserSubjectId");
-
-                    b.HasKey("DocumentoID");
-
-                    b.HasIndex("UserSubjectId");
-
-                    b.ToTable("TipoDocumentos");
-                });
-
-            modelBuilder.Entity("Northwind.IDP.Entities.User", b =>
-                {
-                    b.Property<string>("SubjectId")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50);
-
-                    b.Property<string>("Documento");
-
-                    b.Property<string>("Email");
-
-                    b.Property<bool>("IsActive");
-
-                    b.Property<string>("Password")
-                        .HasMaxLength(100);
-
-                    b.Property<int>("TipoDocumento");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(100);
-
-                    b.HasKey("SubjectId");
-
-                    b.ToTable("Users","dbo");
-                });
-
-            modelBuilder.Entity("Northwind.IDP.Entities.UserClaim", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50);
-
-                    b.Property<string>("ClaimType")
-                        .IsRequired()
-                        .HasMaxLength(250);
-
-                    b.Property<string>("ClaimValue")
-                        .IsRequired()
-                        .HasMaxLength(250);
-
-                    b.Property<string>("SubjectId")
-                        .IsRequired()
-                        .HasMaxLength(50);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SubjectId");
-
-                    b.ToTable("Claims");
-                });
-
-            modelBuilder.Entity("Northwind.IDP.Entities.UserLogin", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(50);
-
-                    b.Property<string>("LoginProvider")
-                        .IsRequired()
-                        .HasMaxLength(250);
-
-                    b.Property<string>("ProviderKey")
-                        .IsRequired()
-                        .HasMaxLength(250);
-
-                    b.Property<string>("SubjectId")
-                        .IsRequired()
-                        .HasMaxLength(50);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SubjectId");
-
-                    b.ToTable("UserLogins");
-                });
-
             modelBuilder.Entity("Northwind.IDP.Entities.ApplicationRoleClaim", b =>
                 {
                     b.HasOne("Northwind.IDP.Entities.ApplicationRole")
@@ -328,29 +237,6 @@ namespace Northwind.IDP.Migrations
                     b.HasOne("Northwind.IDP.Entities.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Northwind.IDP.Entities.TipoDocumento", b =>
-                {
-                    b.HasOne("Northwind.IDP.Entities.User")
-                        .WithMany("TipoDocumentos")
-                        .HasForeignKey("UserSubjectId");
-                });
-
-            modelBuilder.Entity("Northwind.IDP.Entities.UserClaim", b =>
-                {
-                    b.HasOne("Northwind.IDP.Entities.User")
-                        .WithMany("Claims")
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Northwind.IDP.Entities.UserLogin", b =>
-                {
-                    b.HasOne("Northwind.IDP.Entities.User")
-                        .WithMany("Logins")
-                        .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
