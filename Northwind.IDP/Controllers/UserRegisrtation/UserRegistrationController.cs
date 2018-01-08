@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Identity;
 using Northwind.IDP.Entities;
 using System.Security.Claims;
 using Northwind.IDP.Controllers.UserRegisrtation;
+using BotDetect.Web.Mvc;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Northwind.IDP.Controllers.UserRegistration
 {
@@ -23,6 +25,7 @@ namespace Northwind.IDP.Controllers.UserRegistration
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _senderemail;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
 
         private ConfigurationDbContext _context;
@@ -32,7 +35,7 @@ namespace Northwind.IDP.Controllers.UserRegistration
         public UserRegistrationController(INorthwindUserRepository northwindRepository,
             IIdentityServerInteractionService interaction, IHttpContextAccessor httpContextAccessor,
             ConfigurationDbContext context, IClientStore clientStore, IResourceStore resourceStore,
-            UserManager<ApplicationUser> userManager, IEmailSender senderemail)
+            UserManager<ApplicationUser> userManager, IEmailSender senderemail, SignInManager<ApplicationUser> signInManager)
         {
             this._northwindRepository = northwindRepository;
             this._interaction = interaction;
@@ -42,6 +45,7 @@ namespace Northwind.IDP.Controllers.UserRegistration
             this._resourceStore = resourceStore;
             this._userManager = userManager;
             this._senderemail = senderemail;
+            this._signInManager = signInManager;
         }
 
         [HttpGet]
@@ -55,13 +59,13 @@ namespace Northwind.IDP.Controllers.UserRegistration
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken]        
         public async Task<IActionResult> RegisterUser(RegisterUserViewModel model)
         {
             if (ModelState.IsValid)
-            {
-                
-               var resultUser = await _userManager.CreateAsync(new ApplicationUser() {
+            {               
+
+                var resultUser = await _userManager.CreateAsync(new ApplicationUser() {
                    UserName = model.Email,
                    Email = model.Email,       
                    IsActive = true,
@@ -109,9 +113,16 @@ namespace Northwind.IDP.Controllers.UserRegistration
 
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var confirUrl = Url.Action("ConfirmEmail", "UserRegistration", new { userid = user.Id, token = token },Request.Scheme);
-                    await _senderemail.SendEmailAsync(user.Email, "es tu confirmacion", $"por favor darle a este link {confirUrl}");
+                    await _senderemail.SendEmailAsync(user.Email, "es tu confirmacion",confirUrl);
 
                     var addclaim = await _userManager.AddClaimsAsync(user,claims);
+
+                    if (!user.EmailConfirmed)
+                    {
+                        await HttpContext.SignOutAsync();
+                        await _signInManager.SignOutAsync();
+                        return RedirectToAction("Confirmed", "Account");
+                    }
 
                     // log the user in 
                     await _httpContextAccessor.HttpContext.SignInAsync(user.Id, user.UserName);
@@ -176,7 +187,7 @@ namespace Northwind.IDP.Controllers.UserRegistration
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var resetUrl = Url.Action("PasswordReset", "UserRegistration", new { userid = user.Id, token = token },Request.Scheme);
-                await _senderemail.SendEmailAsync(user.Email, "Password Reset", $"User link to reset password: {resetUrl}");
+                await _senderemail.SendEmailAsync(user.Email, "Password Reset",resetUrl);
 
             }
 

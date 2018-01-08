@@ -42,7 +42,39 @@
                 // Subject and multipart/alternative Body
                 mailMsg.Subject = subject;
                 string text = message;
-                string html = @"<p>"+message+"</p>";
+                string css = @"<html>
+                                <head>
+                                    <meta content=""text/html; charset=utf-8"" http-equiv=""Content-Type"">
+                                    <title>Confirmacion de Cuenta</title>
+                                    <style type=""text/css"">
+                                       .button {
+                                                  display: inline-block;
+                                                  padding: 15px 25px;
+                                                  font-size: 24px;
+                                                  cursor: pointer;
+                                                  text-align: center;
+                                                  text-decoration: none;
+                                                  outline: none;
+                                                  color: #fff;
+                                                  background-color: #4CAF50;
+                                                  border: none;
+                                                  border-radius: 15px;
+                                                  box-shadow: 0 9px #999;
+                                                }
+                                        .button:hover {background-color: #3e8e41}
+
+                                        .button:active {
+                                          background-color: #3e8e41;
+                                          box-shadow: 0 5px #666;
+                                          transform: translateY(4px);
+                                        }
+                                    </style>
+                                </head>
+                                <body>
+                                    <p>por favor darle a este link  <a class='button' href='" + message +"'>Confirmar Aqui</a></p>" +
+                                "</body>"+
+                            "</html>";
+                string html = css; //$"<p>por favor darle a este link  <a class='.button' href='{message}'>Confirmar Aqui</a></p>";
                 mailMsg.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(text, null, MediaTypeNames.Text.Plain));
                 mailMsg.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(html, null, MediaTypeNames.Text.Html));
                 

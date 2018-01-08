@@ -49,5 +49,6 @@ namespace Northwind.IDP.Controllers.UserRegistation
 
         public string ReturnUrl { get; set; }
 
+        public string CaptchaCode { get; set; }
     }
 }

@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
+using BotDetect.Web;
 
 namespace Northwind.IDP
 {
@@ -65,11 +67,13 @@ namespace Northwind.IDP
 
             services.AddIdentity<ApplicationUser, ApplicationRole>(option => {
                 option.SignIn.RequireConfirmedEmail = true; //confirmar correo 
-            })
-        
-                    .AddEntityFrameworkStores<NorthwindUserContext>()                      
+            }).AddEntityFrameworkStores<NorthwindUserContext>()                      
                     .AddDefaultTokenProviders()
                     .AddTokenProvider<DefaultDataProtectorTokenProvider<ApplicationUser>>(_defaultTokenProviderName);
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddMemoryCache();   //Adds a default in-memory implementation of
+                                        // IDistributedCache
 
             //services.AddAuthentication(options => {
             //    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -84,7 +88,6 @@ namespace Northwind.IDP
                 options.Password.RequireUppercase = true;
                 options.Password.RequireLowercase = false;
                 options.Password.RequiredUniqueChars = 6;
-
 
                 //lokout settings
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
@@ -112,6 +115,10 @@ namespace Northwind.IDP
 
             //mvc
             services.AddMvc();
+
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromMinutes(20);
+            });
 
             //configuration identity server
             services.AddIdentityServer()
@@ -159,6 +166,10 @@ namespace Northwind.IDP
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseSession();
+            //configure BotDetectCaptcha
+            app.UseCaptcha(_configuration);
 
             configurationDbContext.Database.Migrate();
             configurationDbContext.EnsureSeedDataForContext();

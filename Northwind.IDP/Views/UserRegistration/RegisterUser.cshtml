@@ -1,69 +1,95 @@
 ﻿@model RegisterUserViewModel
 
-    <div class="user-registration-page">
-        <div class="page-header">
-            <h1>User Registration</h1>
-        </div>
-        @Html.Partial("_ValidationSummary")
-        @Html.AntiForgeryToken()
-        <div class="row">
-            <div class="col-sm-6">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">User Registration</h3>
-                    </div>
-                    <div class="panel-body">
-                        <form asp-route="Login">
-                            <input type="hidden" asp-for="ReturnUrl"/>
-                            <fieldset>
-                                <div class="form-group">
-                                    <label asp-for="Username"></label>
-                                    <input class="form-control" placeholder="UserName" asp-for="Username" autofocus />
+@using BotDetect.Web.Mvc;
+
+@{ 
+    //var exampleCaptcha = new MvcCaptcha("ExampleCaptcha") { UserInputID = "CaptchaCode" };
+}
+@section header {
+
+    <environment names="Development,Staging,Production">       
+        <link href="@BotDetect.Web.CaptchaUrls.Absolute.LayoutStyleSheetUrl"
+              rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="~/css/StyleSheet.css" />
+     </environment>
+
+}
+
+<div class="user-registration-page">
+    <div class="page-header">
+       <br /><br /><br />@*<h1>User Registration</h1>*@
+    </div>
+    @Html.Partial("_ValidationSummary")
+    @Html.AntiForgeryToken()
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-5">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">User Registration</h3>
+                </div>
+                <div class="panel-body">
+                    <form asp-route="Login" method="post">
+                        <input type="hidden" asp-for="ReturnUrl" />
+                        <fieldset>
+                            <div class="form-group">
+                                <label asp-for="Email"></label>
+                                <input class="form-control" placeholder="Email" asp-for="Email" />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Password"></label>
+                                <input class="form-control" placeholder="Password" asp-for="Password" autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="ConfirmPassword"></label>
+                                <input class="form-control" placeholder="Confirm Password" asp-for="ConfirmPassword" autocomplete="off" />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="TipoDocumento"></label>
+                                <select class="form-control" asp-for="DocumentoId" asp-items="@Model.TipoDocumento"></select>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Documento"></label>
+                                <input class="form-control" placeholder="Documento a digitar" asp-for="Documento" />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Firstname"></label>
+                                <input class="form-control" placeholder="Firstname" asp-for="Firstname" />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Lastname"></label>
+                                <input class="form-control" placeholder="LastName" asp-for="Lastname" />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Address"></label>
+                                <input class="form-control" placeholder="Address" asp-for="Address" />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Country"></label>
+                                <select class="form-control" asp-for="Country" asp-items="@Model.Countrycodes"></select>
+                            </div>
+
+                            @*<div>
+                                <label asp-for="CaptchaCode">Retype the code from the picture:</label>
+                               
+                                <captcha mvc-captcha="exampleCaptcha" />
+                                
+                                <div class="actions">
+                                    <input asp-for="CaptchaCode" />
+                                    <input type="submit" value="Validate" />
+                                    <span asp-validation-for="CaptchaCode"></span>
                                 </div>
-                                <div class="form-group">
-                                    <label asp-for="Email"></label>
-                                    <input class="form-control" placeholder="Email" asp-for="Email" />
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="Password"></label>
-                                    <input class="form-control" placeholder="Password" asp-for="Password" autocomplete="off" />
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="ConfirmPassword"></label>
-                                    <input class="form-control" placeholder="Confirm Password" asp-for="ConfirmPassword" autocomplete="off" />
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="TipoDocumento"></label>
-                                    <select class="form-control" asp-for="DocumentoId" asp-items="@Model.TipoDocumento"></select>
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="Documento"></label>
-                                    <input class="form-control" placeholder="Documento a digitar" asp-for="Documento" />
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="Firstname"></label>
-                                    <input class="form-control" placeholder="Firstname" asp-for="Firstname" />
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="Lastname"></label>
-                                    <input class="form-control" placeholder="LastName" asp-for="Lastname" />
-                                </div>                                
-                                <div class="form-group">
-                                    <label asp-for="Address"></label>
-                                    <input class="form-control" placeholder="Address" asp-for="Address" />
-                                </div>
-                                <div class="form-group">
-                                    <label asp-for="Country"></label>
-                                    <select class="form-control" asp-for="Country" asp-items="@Model.Countrycodes">                                        
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <button class="btn btn-primary">Register</button>
-                                </div>
-                            </fieldset>
-                        </form>
-                    </div>
+
+                            </div>*@
+
+                            <div class="form-group">
+                                <button class="btn btn-primary">Register</button>
+                            </div>
+                        </fieldset>
+                    </form>
                 </div>
             </div>
         </div>
+        <div class="col-sm-4"></div>
     </div>
+</div>

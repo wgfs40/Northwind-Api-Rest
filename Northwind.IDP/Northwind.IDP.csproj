@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="ASPSMS" Version="0.0.2" />
+    <PackageReference Include="CAPTCHA.asp.net.core.on.legacy.net.frameworks" Version="4.2.0" />
     <PackageReference Include="IdentityServer4" Version="2.0.2" />
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="2.0.0" />
     <PackageReference Include="IdentityServer4.EntityFramework" Version="2.0.0" />
@@ -21,6 +22,10 @@
     <PackageReference Include="Twilio" Version="5.9.2" />
     <PackageReference Include="Twilio.AspNet.Core" Version="5.8.3" />
     <PackageReference Include="vue" Version="2.5.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
 </Project>
