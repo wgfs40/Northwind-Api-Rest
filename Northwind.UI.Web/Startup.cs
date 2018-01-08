@@ -61,7 +61,7 @@ namespace Northwind.UI.Web
             {
                 options.SignInScheme = "Cookies";
 
-                options.Authority = "https://172.16.3.80/"; 
+                options.Authority = "https://localhost:44384/"; 
                 options.RequireHttpsMetadata = true;
                 
 

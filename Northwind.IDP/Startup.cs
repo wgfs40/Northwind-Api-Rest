@@ -18,6 +18,7 @@ namespace Northwind.IDP
     public class Startup
     {
         public static IConfigurationRoot _configuration;
+        private const string _defaultTokenProviderName = "Default";
 
         public Startup(IHostingEnvironment env)
         {
@@ -30,11 +31,12 @@ namespace Northwind.IDP
             _configuration = builder.Build();
         }
 
+        //configurated Certificates
         public X509Certificate2 LoadCerticateFromStore()
         {
-            string thumPrint = "986E85B317C7B3313B9CC43648B4EB03B7D4BC0E";
+            //string thumPrint = "986E85B317C7B3313B9CC43648B4EB03B7D4BC0E";
             //string thumPrint = "964B07BB0C4642B55690F2DBE599E70029462BEC";
-            
+            string thumPrint = "6B7ACC520305BFDB4F7252DAEB2177CC091FAAE1";
 
             using (var store = new X509Store(StoreName.My,StoreLocation.LocalMachine))
             {
@@ -62,17 +64,17 @@ namespace Northwind.IDP
                 _configuration["connectionStrings:identityServerdataDBConnectionString"];
 
             services.AddIdentity<ApplicationUser, ApplicationRole>(option => {
-                
+                option.SignIn.RequireConfirmedEmail = true; //confirmar correo 
             })
         
-                    .AddEntityFrameworkStores<NorthwindUserContext>()                        
-                    .AddDefaultTokenProviders();
+                    .AddEntityFrameworkStores<NorthwindUserContext>()                      
+                    .AddDefaultTokenProviders()
+                    .AddTokenProvider<DefaultDataProtectorTokenProvider<ApplicationUser>>(_defaultTokenProviderName);
 
             //services.AddAuthentication(options => {
             //    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             //    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             //}).AddCookie();
-
 
             services.Configure<IdentityOptions>(options => {
                 //password settings
@@ -92,11 +94,18 @@ namespace Northwind.IDP
                 //user Settings
                 options.User.RequireUniqueEmail = true;
 
+                //Tokens Settings
+                options.Tokens.PasswordResetTokenProvider = _defaultTokenProviderName;
+
             });
 
+            //set time span for token expiration time
+            services.Configure<DefaultDataProtectorTokenProviderOptions>(option =>
+            {
+                option.TokenLifespan = TimeSpan.FromMinutes(2); // asignacion del tiempo de expiracion del token
+            });
 
             services.AddScoped<INorthwindUserRepository, NorthwindUserRepository>();
-            
 
             var migrationsAssembly = typeof(Startup)
                 .GetTypeInfo().Assembly.GetName().Name;

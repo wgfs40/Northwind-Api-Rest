@@ -192,13 +192,19 @@ namespace Northwind.IDP.Controllers.UserRegistration
         [HttpPost]
         public async Task<IActionResult> PasswordReset(PasswordResetViewModel model)
         {
+            List<ErrorViewModel> errors = new List<ErrorViewModel>();
             var user = await _userManager.FindByIdAsync(model.UserId);
             if (user != null)
             {
                 var identityResult = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
                 if (!identityResult.Succeeded)
                 {
-                    return View("Error!");
+                    foreach (var err in identityResult.Errors)
+                    {
+                        errors.Add(new ErrorViewModel() { Code = err.Code, Description = err.Description });
+                    }
+                    
+                    return View("Error",errors);
                 }
 
                 return RedirectToAction("Index","Home");
