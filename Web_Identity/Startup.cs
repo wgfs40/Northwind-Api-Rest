@@ -23,6 +23,13 @@
             services.AddDbContext<ApplicationDbContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConecction")));
 
+            services.AddDbContext<NorthwindContext>( options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("NorthwindConecction"));
+            });
+
+            
+
             services.AddIdentity<IdentityUser, IdentityRole>()
                 //.AddErrorDescriber<CustomIdentityErrorDescriber>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
