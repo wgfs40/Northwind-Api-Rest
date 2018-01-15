@@ -1,0 +1,22 @@
+﻿@model  Northwind_Web.ViewModels.RegisterModel
+@{
+    ViewBag.Title = "Register";
+}
+
+<h2>Registration</h2>
+<hr />
+@using (Html.BeginForm("Register","Account",FormMethod.Post))
+{
+    @Html.ValidationSummary()
+    @Html.LabelFor(x => x.Username) @Html.TextBoxFor(x => x.Username)
+    <br />
+    @Html.LabelFor(x => x.Password) @Html.PasswordFor(x => x.Password)
+    <br />
+    @Html.LabelFor(x => x.FullName) @Html.TextBoxFor(x => x.FullName)
+    <br />
+    @Html.LabelFor(x => x.Country) @Html.TextBoxFor(x => x.Country)
+    <br />
+    @Html.LabelFor(x => x.AddressLine) @Html.TextBoxFor(x => x.AddressLine)
+    <br />
+    <input  class="btn" type="submit" value="Register" />
+}
