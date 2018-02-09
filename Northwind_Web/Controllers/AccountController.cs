@@ -6,20 +6,22 @@ using System.Web;
 using Northwind_Web.ViewModels;
 using System.Threading.Tasks;
 using System.Linq;
+using MvcBreadCrumbs;
 
 namespace Northwind_Web.Controllers
 {
+    
     public class AccountController : Controller
     {
         public UserManager<ExtendedUser> UserManager => HttpContext.GetOwinContext().Get<UserManager<ExtendedUser>>();
-        public SignInManager<ExtendedUser, string> signInManager => HttpContext.GetOwinContext().Get<SignInManager<ExtendedUser, string>>();
+        public SignInManager<ExtendedUser, string> SignInManager => HttpContext.GetOwinContext().Get<SignInManager<ExtendedUser, string>>();
 
-        // GET: Account
+    
         public ActionResult Register()
         {
             return View();
         }
-
+               
         [HttpPost]
         public async Task<ActionResult> Register(RegisterModel model)
         {
@@ -46,25 +48,31 @@ namespace Northwind_Web.Controllers
             return View(model);
         }
 
-        public ActionResult Login()
+    
+        public ActionResult Login(string ReturnUrl)
         {
+            ViewBag.returnurl = ReturnUrl;
             return View();
         }
 
         [HttpPost]
-        public async Task<ActionResult> Login(LoginModel model)
+        public async Task<ActionResult> Login(LoginModel model,string ReturnUrl)
         {
-           var signinStatus =  await signInManager.PasswordSignInAsync(model.Username, model.Password, true, true);
+           var signinStatus =  await SignInManager.PasswordSignInAsync(model.Username, model.Password, true, true);
             switch (signinStatus)
             {
                 case SignInStatus.Success:
-                    return RedirectToAction("Index", "Home");                                    
+                    if (!string.IsNullOrEmpty(ReturnUrl))                    
+                        return Redirect(ReturnUrl);                    
+                    else
+                       return RedirectToAction("Index", "Home");                    
                 default:
                     ModelState.AddModelError("","Invalid Credentials!!");
                     return View(model);                    
             }            
         }
-     
+
+    
         public ActionResult Logout()
         {
             var authenticationManager = HttpContext.GetOwinContext().Authentication;

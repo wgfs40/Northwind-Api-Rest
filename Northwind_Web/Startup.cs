@@ -20,7 +20,15 @@ namespace Northwind_Web
             app.CreatePerOwinContext(() => new ExtendedUserDbContext(connectionString));
 
             app.CreatePerOwinContext<UserStore<ExtendedUser>>((opt, cont) => new UserStore<ExtendedUser>(cont.Get<ExtendedUserDbContext>()));
-            app.CreatePerOwinContext<UserManager<ExtendedUser>>((opt,cont) => new UserManager<ExtendedUser>(cont.Get<UserStore<ExtendedUser>>()));
+            app.CreatePerOwinContext<UserManager<ExtendedUser>>(
+                (opt, cont) => 
+                    {
+                        var usermanager = new UserManager<ExtendedUser>(cont.Get<UserStore<ExtendedUser>>());
+                        usermanager.UserTokenProvider = new DataProtectorTokenProvider<ExtendedUser>(opt.DataProtectionProvider.Create());
+                        return usermanager;
+                    }
+                );
+                   
 
             app.CreatePerOwinContext<SignInManager<ExtendedUser, string>>(
                 (opt,cont) => 
@@ -30,9 +38,8 @@ namespace Northwind_Web
 
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
                 LoginPath = new PathString("/Account/Login"),
-                LogoutPath= new PathString("/Account/Logout")
-             
-
+                LogoutPath = new PathString("/Account/Logout"),
+                ExpireTimeSpan = TimeSpan.FromMinutes(1)
             });
         }
     }

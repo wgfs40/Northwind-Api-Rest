@@ -1,6 +1,7 @@
 ﻿@model  Northwind_Web.ViewModels.LoginModel
 @{
     ViewBag.Title = "Login";
+    string urlreturn = ViewBag.returnurl != null ? ViewBag.returnurl : "";
 }
 
 <h2>Registration</h2>
@@ -8,6 +9,7 @@
 @using (Html.BeginForm("Login", "Account", FormMethod.Post))
 {
     @Html.ValidationSummary()
+    @Html.Hidden("ReturnUrl",urlreturn)
     @Html.LabelFor(x => x.Username) @Html.TextBoxFor(x => x.Username)
     <br />
     @Html.LabelFor(x => x.Password) @Html.PasswordFor(x => x.Password)
